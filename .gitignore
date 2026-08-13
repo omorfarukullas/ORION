@@ -1,0 +1,79 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+*.pyc
+
+# === Virtual Environments ===
+venv/
+env/
+.env/
+.venv/
+ENV/
+
+# === Distribution / Packaging ===
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# === Testing ===
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# === ORION Models (large binary files — download separately) ===
+models/*.pkl
+models/*.bin
+models/*.pt
+models/*.onnx
+models/*.gguf
+
+# === ORION Database ===
+*.db
+*.sqlite
+*.sqlite3
+
+# === ORION Logs ===
+*.log
+logs/
+
+# === Audio / Screenshots (generated at runtime) ===
+*.wav
+*.mp3
+screenshots/
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Environment variables / secrets ===
+.env
+*.env
+secrets.json

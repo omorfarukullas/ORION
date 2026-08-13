@@ -1,0 +1,76 @@
+text,intent
+open chrome,OPEN_APP
+launch chrome,OPEN_APP
+start chrome,OPEN_APP
+open visual studio code,OPEN_APP
+launch vscode,OPEN_APP
+open notepad,OPEN_APP
+close chrome,CLOSE_APP
+close vscode,CLOSE_APP
+quit notepad,CLOSE_APP
+open website youtube.com,OPEN_WEBSITE
+go to github.com,OPEN_WEBSITE
+navigate to google.com,OPEN_WEBSITE
+search google for python tutorials,WEB_SEARCH
+google machine learning projects,WEB_SEARCH
+search for best restaurants near me,WEB_SEARCH
+search youtube for lofi music,YOUTUBE_SEARCH
+find on youtube how to code,YOUTUBE_SEARCH
+youtube search python for beginners,YOUTUBE_SEARCH
+how much cpu am i using,SYSTEM_CPU
+what is my processor usage,SYSTEM_CPU
+check cpu usage,SYSTEM_CPU
+how much ram am i using,SYSTEM_RAM
+what is my memory usage,SYSTEM_RAM
+check memory,SYSTEM_RAM
+how much battery do i have,SYSTEM_BATTERY
+what is my battery level,SYSTEM_BATTERY
+check battery,SYSTEM_BATTERY
+show system info,SYSTEM_INFO
+tell me about my system,SYSTEM_INFO
+system information,SYSTEM_INFO
+create a folder called projects,CREATE_FOLDER
+make a new folder named work,CREATE_FOLDER
+create folder documents,CREATE_FOLDER
+create a file called notes.txt,CREATE_FILE
+make a new file report.docx,CREATE_FILE
+create file readme,CREATE_FILE
+find the file resume.pdf,FIND_FILE
+search for notes.txt,FIND_FILE
+locate my document,FIND_FILE
+rename file old.txt to new.txt,RENAME_FILE
+rename the folder projects to work,RENAME_FILE
+rename my document,RENAME_FILE
+delete the file old.txt,DELETE_FILE
+remove the folder temp,DELETE_FILE
+delete file readme.txt,DELETE_FILE
+play music,PLAY_MEDIA
+play the song,PLAY_MEDIA
+start playing,PLAY_MEDIA
+pause the music,PAUSE_MEDIA
+pause playback,PAUSE_MEDIA
+pause,PAUSE_MEDIA
+next track,NEXT_TRACK
+skip song,NEXT_TRACK
+next song,NEXT_TRACK
+previous track,PREVIOUS_TRACK
+go back,PREVIOUS_TRACK
+play previous song,PREVIOUS_TRACK
+volume up,VOLUME_UP
+increase volume,VOLUME_UP
+louder please,VOLUME_UP
+volume down,VOLUME_DOWN
+decrease volume,VOLUME_DOWN
+turn it down,VOLUME_DOWN
+mute the sound,MUTE
+silence,MUTE
+mute,MUTE
+what time is it,TIME
+current time,TIME
+tell me the time,TIME
+what is today's date,DATE
+what day is it,DATE
+tell me the date,DATE
+take a screenshot,SCREENSHOT
+capture my screen,SCREENSHOT
+screenshot,SCREENSHOT

@@ -1,0 +1,274 @@
+{
+  "_comment": "Extended training data for Phase 6 ML classifier. Augments intents.csv with richer paraphrases and entity slots.",
+  "version": "1.0",
+  "intents": [
+    {
+      "intent": "OPEN_APP",
+      "examples": [
+        "open chrome",
+        "launch chrome",
+        "start chrome",
+        "open visual studio code",
+        "launch vscode",
+        "open notepad",
+        "start spotify",
+        "open discord",
+        "run calculator",
+        "open file explorer"
+      ],
+      "entities": ["app_name"]
+    },
+    {
+      "intent": "CLOSE_APP",
+      "examples": [
+        "close chrome",
+        "quit vscode",
+        "exit notepad",
+        "close spotify",
+        "kill discord"
+      ],
+      "entities": ["app_name"]
+    },
+    {
+      "intent": "OPEN_WEBSITE",
+      "examples": [
+        "open youtube.com",
+        "go to github.com",
+        "navigate to google.com",
+        "visit reddit.com",
+        "take me to stackoverflow.com"
+      ],
+      "entities": ["url"]
+    },
+    {
+      "intent": "WEB_SEARCH",
+      "examples": [
+        "search google for python tutorials",
+        "google machine learning projects",
+        "search for best restaurants near me",
+        "look up weather in London",
+        "find information about black holes"
+      ],
+      "entities": ["query"]
+    },
+    {
+      "intent": "YOUTUBE_SEARCH",
+      "examples": [
+        "search youtube for lofi music",
+        "find on youtube how to code",
+        "youtube python for beginners",
+        "play on youtube dark side of the moon",
+        "search youtube for cooking recipes"
+      ],
+      "entities": ["query"]
+    },
+    {
+      "intent": "SYSTEM_CPU",
+      "examples": [
+        "how much cpu am i using",
+        "what is my processor usage",
+        "check cpu usage",
+        "cpu stats",
+        "processor load"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "SYSTEM_RAM",
+      "examples": [
+        "how much ram am i using",
+        "what is my memory usage",
+        "check memory",
+        "ram stats",
+        "how much memory is free"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "SYSTEM_BATTERY",
+      "examples": [
+        "how much battery do i have",
+        "what is my battery level",
+        "check battery",
+        "battery percentage",
+        "is the laptop charging"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "SYSTEM_INFO",
+      "examples": [
+        "show system info",
+        "tell me about my system",
+        "system information",
+        "system status",
+        "hardware info"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "CREATE_FOLDER",
+      "examples": [
+        "create a folder called projects",
+        "make a new folder named work",
+        "create folder documents",
+        "new folder called ai projects",
+        "make directory temp"
+      ],
+      "entities": ["folder_name"]
+    },
+    {
+      "intent": "CREATE_FILE",
+      "examples": [
+        "create a file called notes.txt",
+        "make a new file report.docx",
+        "create file readme",
+        "new file called todo.txt",
+        "make a text file"
+      ],
+      "entities": ["file_name"]
+    },
+    {
+      "intent": "FIND_FILE",
+      "examples": [
+        "find the file resume.pdf",
+        "search for notes.txt",
+        "locate my document",
+        "where is the file budget.xlsx",
+        "find my project folder"
+      ],
+      "entities": ["file_name"]
+    },
+    {
+      "intent": "RENAME_FILE",
+      "examples": [
+        "rename file old.txt to new.txt",
+        "rename the folder projects to work",
+        "rename my document",
+        "change the name of report to final"
+      ],
+      "entities": ["old_name", "new_name"]
+    },
+    {
+      "intent": "DELETE_FILE",
+      "examples": [
+        "delete the file old.txt",
+        "remove the folder temp",
+        "delete file readme.txt",
+        "trash the old backup",
+        "delete folder downloads"
+      ],
+      "entities": ["file_name"]
+    },
+    {
+      "intent": "PLAY_MEDIA",
+      "examples": [
+        "play music",
+        "play the song",
+        "start playing",
+        "play bohemian rhapsody",
+        "play my playlist"
+      ],
+      "entities": ["media_name"]
+    },
+    {
+      "intent": "PAUSE_MEDIA",
+      "examples": [
+        "pause the music",
+        "pause playback",
+        "pause",
+        "stop the music",
+        "hold the music"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "NEXT_TRACK",
+      "examples": [
+        "next track",
+        "skip song",
+        "next song",
+        "skip this",
+        "play the next one"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "PREVIOUS_TRACK",
+      "examples": [
+        "previous track",
+        "go back",
+        "play previous song",
+        "last song",
+        "play that again"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "VOLUME_UP",
+      "examples": [
+        "volume up",
+        "increase volume",
+        "louder please",
+        "turn up the volume",
+        "make it louder"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "VOLUME_DOWN",
+      "examples": [
+        "volume down",
+        "decrease volume",
+        "turn it down",
+        "quieter please",
+        "lower the volume"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "MUTE",
+      "examples": [
+        "mute the sound",
+        "silence",
+        "mute",
+        "mute audio",
+        "turn off sound"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "TIME",
+      "examples": [
+        "what time is it",
+        "current time",
+        "tell me the time",
+        "what's the time",
+        "time please"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "DATE",
+      "examples": [
+        "what is today's date",
+        "what day is it",
+        "tell me the date",
+        "what's today",
+        "what's the date today"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "SCREENSHOT",
+      "examples": [
+        "take a screenshot",
+        "capture my screen",
+        "screenshot",
+        "grab a screenshot",
+        "screen capture"
+      ],
+      "entities": []
+    }
+  ]
+}

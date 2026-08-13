@@ -1,0 +1,65 @@
+{
+  "_comment": "Hard-coded command patterns used in Phase 5 before the ML classifier is wired in (Phase 6). Each entry maps a pattern (regex or keyword set) to an intent and optional default entity.",
+  "patterns": [
+    {
+      "intent":   "TIME",
+      "keywords": ["what time", "current time", "tell me the time"],
+      "entity":   null
+    },
+    {
+      "intent":   "DATE",
+      "keywords": ["what date", "today's date", "what day"],
+      "entity":   null
+    },
+    {
+      "intent":   "SCREENSHOT",
+      "keywords": ["take a screenshot", "screenshot", "capture screen"],
+      "entity":   null
+    },
+    {
+      "intent":   "OPEN_APP",
+      "keywords": ["open", "launch", "start", "run"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "WEB_SEARCH",
+      "keywords": ["search google for", "google", "search for"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "YOUTUBE_SEARCH",
+      "keywords": ["search youtube for", "youtube search", "find on youtube"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "SYSTEM_CPU",
+      "keywords": ["cpu usage", "processor usage", "how much cpu"],
+      "entity":   null
+    },
+    {
+      "intent":   "SYSTEM_RAM",
+      "keywords": ["ram usage", "memory usage", "how much ram", "how much memory"],
+      "entity":   null
+    },
+    {
+      "intent":   "SYSTEM_BATTERY",
+      "keywords": ["battery", "battery level", "how much battery"],
+      "entity":   null
+    },
+    {
+      "intent":   "VOLUME_UP",
+      "keywords": ["volume up", "increase volume", "louder", "turn up"],
+      "entity":   null
+    },
+    {
+      "intent":   "VOLUME_DOWN",
+      "keywords": ["volume down", "decrease volume", "quieter", "turn down"],
+      "entity":   null
+    },
+    {
+      "intent":   "MUTE",
+      "keywords": ["mute", "silence", "quiet"],
+      "entity":   null
+    }
+  ]
+}
