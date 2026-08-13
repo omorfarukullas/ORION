@@ -40,6 +40,10 @@ class Settings:
     CHUNK_SIZE: int = 1_280            # Frames per buffer (80 ms @ 16 kHz)
     RECORD_SECONDS: int = 5            # Max recording length after wake word
 
+    # ── VAD (Voice Activity Detection) ────────────────────────────────────────────
+    VAD_SILENCE_THRESHOLD: float = 0.01   # RMS amplitude below which = silence
+    VAD_SILENCE_DURATION: float = 1.5     # Seconds of silence to trigger stop
+
     # ── Wake word ──────────────────────────────────────────────────────────────
     WAKE_WORD: str = "hey_jarvis"      # openWakeWord built-in model name
     WAKE_WORD_THRESHOLD: float = 0.5   # Activation sensitivity (0–1)

@@ -57,8 +57,38 @@ def main() -> None:
     )
     tts.speak("Hello. I am ORION.")
 
+    # ── Phase 3: Speech Input (Listening & Transcription) ─────────────────────
+    from speech.listener import Listener
+    from speech.speech_to_text import SpeechToText
+
+    stt = SpeechToText(
+        model_size=settings.WHISPER_MODEL,
+        device=settings.WHISPER_DEVICE,
+        language=settings.WHISPER_LANGUAGE,
+    )
+    stt.load()
+
+    tts.speak("I am listening.")
+    listener = Listener(
+        sample_rate=settings.SAMPLE_RATE,
+        max_seconds=settings.RECORD_SECONDS,
+        silence_threshold=settings.VAD_SILENCE_THRESHOLD,
+        silence_duration=settings.VAD_SILENCE_DURATION,
+        chunk_size=settings.CHUNK_SIZE,
+    )
+    audio = listener.record()
+
+    if len(audio) > 0:
+        transcript = stt.transcribe(audio)
+        logger.info(f"Final Transcript: '{transcript}'")
+        if transcript:
+            tts.speak(f"You said: {transcript}")
+        else:
+            tts.speak("I did not hear any speech.")
+    else:
+        logger.warning("No audio recorded.")
+
     # ── Placeholder: future phases hook in here ────────────────────────────────
-    # Phase 3  → from speech.listener import Listener; listener.start()
     # Phase 4  → from speech.wake_word import WakeWordDetector; wwd.run()
     # Phase 5+ → from planner.task_planner import TaskPlanner; planner.run()
 
