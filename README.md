@@ -11,7 +11,7 @@
 | Phase | Module | Scope | Status |
 | :--- | :--- | :--- | :---: |
 | **Phase 1** | **Scaffold & Setup** | Directory structure, dependencies, configurations, logging, and stubs | **✅ Complete** |
-| **Phase 2** | **Speech Output** | Offline Text-to-Speech (`pyttsx3`) | 🔲 Pending |
+| **Phase 2** | **Speech Output** | Offline Text-to-Speech (`pyttsx3`) | **✅ Complete** |
 | **Phase 3** | **Speech Input** | Mic listening with Voice Activity Detection (VAD) & local Whisper transcription | 🔲 Pending |
 | **Phase 4** | **Wake Word** | Idle/standby wake word loop (`openWakeWord`) | 🔲 Pending |
 | **Phase 5** | **Rule-Based Engine** | Hard-coded command execution | 🔲 Pending |

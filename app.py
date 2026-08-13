@@ -48,8 +48,12 @@ def main() -> None:
 
     print("\n  ORION initialized.\n")
 
+    # ── Phase 2: Text-to-speech initialization & greeting ──────────────────────
+    from speech.text_to_speech import TextToSpeech
+    tts = TextToSpeech(rate=settings.TTS_RATE, volume=settings.TTS_VOLUME)
+    tts.speak("Hello. I am ORION.")
+
     # ── Placeholder: future phases hook in here ────────────────────────────────
-    # Phase 2  → from speech.text_to_speech import TextToSpeech; tts.speak(...)
     # Phase 3  → from speech.listener import Listener; listener.start()
     # Phase 4  → from speech.wake_word import WakeWordDetector; wwd.run()
     # Phase 5+ → from planner.task_planner import TaskPlanner; planner.run()
