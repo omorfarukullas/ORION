@@ -50,7 +50,11 @@ def main() -> None:
 
     # ── Phase 2: Text-to-speech initialization & greeting ──────────────────────
     from speech.text_to_speech import TextToSpeech
-    tts = TextToSpeech(rate=settings.TTS_RATE, volume=settings.TTS_VOLUME)
+    tts = TextToSpeech(
+        rate=settings.TTS_RATE,
+        volume=settings.TTS_VOLUME,
+        voice_index=settings.TTS_VOICE_INDEX,
+    )
     tts.speak("Hello. I am ORION.")
 
     # ── Placeholder: future phases hook in here ────────────────────────────────

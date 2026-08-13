@@ -58,7 +58,8 @@ class Settings:
 
     # ── TTS (pyttsx3) ──────────────────────────────────────────────────────────
     TTS_RATE: int = 180                # Words per minute
-    TTS_VOLUME: float = 0.9           # 0.0 – 1.0
+    TTS_VOLUME: float = 0.9            # 0.0 – 1.0
+    TTS_VOICE_INDEX: int = 0          # 0 = Microsoft David (Male), 1 = Microsoft Zira (Female)
 
     # ── GUI ────────────────────────────────────────────────────────────────────
     GUI_THEME: str = "dark"            # "dark" | "light" | "system"

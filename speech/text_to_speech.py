@@ -23,14 +23,16 @@ class TextToSpeech:
     espeak on Linux). Fully offline with zero external API dependencies.
     """
 
-    def __init__(self, rate: int = 180, volume: float = 0.9) -> None:
+    def __init__(self, rate: int = 180, volume: float = 0.9, voice_index: Optional[int] = None) -> None:
         """
         Args:
-            rate:    Words per minute (default: 180).
-            volume:  Speech volume 0.0–1.0 (default: 0.9).
+            rate:        Words per minute (default: 180).
+            volume:      Speech volume 0.0–1.0 (default: 0.9).
+            voice_index: Index of system voice profile to use (default: None).
         """
         self.rate = rate
         self.volume = volume
+        self.voice_index = voice_index
         self._engine: Optional[pyttsx3.Engine] = None
         self._init_engine()
 
@@ -40,6 +42,8 @@ class TextToSpeech:
             self._engine = pyttsx3.init()
             self.set_rate(self.rate)
             self.set_volume(self.volume)
+            if self.voice_index is not None:
+                self.set_voice_by_index(self.voice_index)
             logger.info("TextToSpeech engine initialized successfully.")
         except Exception as e:
             logger.error(f"Failed to initialize TextToSpeech engine: {e}")
