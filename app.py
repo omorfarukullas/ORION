@@ -86,6 +86,12 @@ def main() -> None:
         chunk_size=settings.CHUNK_SIZE,
     )
 
+    # ── Phase 5: Basic Command Engine ───────────────────────────────────────────
+    from nlp.rule_engine import RuleEngine
+    from nlp.command_dispatcher import dispatch
+
+    rule_engine = RuleEngine()
+
     logger.info("ORION ready. Entering continuous standby loop. Press Ctrl+C to exit.")
 
     try:
@@ -102,7 +108,10 @@ def main() -> None:
                 transcript = stt.transcribe(audio)
                 logger.info(f"Final Transcript: '{transcript}'")
                 if transcript:
-                    tts.speak(f"You said: {transcript}")
+                    cmd = rule_engine.parse(transcript)
+                    reply = dispatch(cmd)
+                    logger.info(f"Command execution reply: '{reply}'")
+                    tts.speak(reply)
                 else:
                     tts.speak("I did not hear any speech.")
             else:

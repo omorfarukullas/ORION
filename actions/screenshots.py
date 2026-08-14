@@ -1,12 +1,17 @@
 """
 actions/screenshots.py
 ======================
-STUB — Phase 8
-
 Capture and save screenshots using pyautogui + Pillow.
 """
 from __future__ import annotations
+from datetime import datetime
 from pathlib import Path
+import pyautogui
+
+from config.settings import Settings
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def take_screenshot(save_dir: Path | None = None) -> str:
@@ -18,8 +23,17 @@ def take_screenshot(save_dir: Path | None = None) -> str:
 
     Returns:
         Spoken confirmation with the save path.
-
-    Raises:
-        NotImplementedError: Until Phase 8 is implemented.
     """
-    raise NotImplementedError("take_screenshot is implemented in Phase 8.")
+    target_dir = save_dir or Settings.SCREENSHOTS_DIR
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"orion_{timestamp}.png"
+    filepath = target_dir / filename
+
+    logger.info(f"Taking screenshot... saving to {filepath}")
+    screenshot = pyautogui.screenshot()
+    screenshot.save(filepath)
+
+    logger.info(f"Screenshot saved successfully at {filepath}")
+    return f"Screenshot saved as {filename}."

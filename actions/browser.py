@@ -1,12 +1,14 @@
 """
 actions/browser.py
 ==================
-STUB — Phase 8
-
-Web search and URL navigation using the standard library ``webbrowser``
-module (cross-platform, no browser automation needed for basic searches).
+Web search and URL navigation using standard library webbrowser.
 """
 from __future__ import annotations
+import urllib.parse
+import webbrowser
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def open_url(url: str) -> str:
@@ -18,28 +20,38 @@ def open_url(url: str) -> str:
 
     Returns:
         Spoken confirmation string.
-
-    Raises:
-        NotImplementedError: Until Phase 8 is implemented.
     """
-    raise NotImplementedError("open_url is implemented in Phase 8.")
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
+    logger.info(f"Opening URL: {url}")
+    webbrowser.open(url)
+    return f"Opening {url}."
 
 
 def web_search(query: str) -> str:
     """
     Open a Google search for *query* in the default browser.
-
-    Raises:
-        NotImplementedError: Until Phase 8 is implemented.
     """
-    raise NotImplementedError("web_search is implemented in Phase 8.")
+    if not query:
+        return "What would you like me to search for?"
+
+    encoded_query = urllib.parse.quote(query)
+    url = f"https://www.google.com/search?q={encoded_query}"
+    logger.info(f"Searching Google for: '{query}' ({url})")
+    webbrowser.open(url)
+    return f"Searching Google for {query}."
 
 
 def youtube_search(query: str) -> str:
     """
     Open a YouTube search for *query* in the default browser.
-
-    Raises:
-        NotImplementedError: Until Phase 8 is implemented.
     """
-    raise NotImplementedError("youtube_search is implemented in Phase 8.")
+    if not query:
+        return "What would you like to search on YouTube?"
+
+    encoded_query = urllib.parse.quote(query)
+    url = f"https://www.youtube.com/results?search_query={encoded_query}"
+    logger.info(f"Searching YouTube for: '{query}' ({url})")
+    webbrowser.open(url)
+    return f"Searching YouTube for {query}."
