@@ -110,5 +110,75 @@ class TestSpeechToText(unittest.TestCase):
         self.assertEqual(stt.transcribe(None), "")
 
 
+class TestWakeWordDetector(unittest.TestCase):
+    """Test suite for speech.wake_word.WakeWordDetector."""
+
+    def test_register_callback(self):
+        """Test that register_callback correctly registers a function."""
+        from speech.wake_word import WakeWordDetector
+
+        detector = WakeWordDetector()
+        cb = MagicMock()
+        detector.register_callback(cb)
+        self.assertEqual(detector._on_wake, cb)
+
+    def test_stop_before_start(self):
+        """Test that calling stop() before start() is safe."""
+        from speech.wake_word import WakeWordDetector
+
+        detector = WakeWordDetector()
+        detector.stop()
+        self.assertFalse(detector._is_running)
+
+    @patch("speech.wake_word.sd.InputStream")
+    def test_wake_word_detection_triggers_callback(self, mock_input_stream):
+        """Test that a score >= threshold triggers the callback and stops the loop."""
+        from speech.wake_word import WakeWordDetector
+
+        detector = WakeWordDetector(wake_word="hey_jarvis", threshold=0.5)
+        mock_model = MagicMock()
+        mock_model.predict.return_value = {"hey_jarvis": 0.8}
+        detector._model = mock_model
+
+        callback_mock = MagicMock()
+        detector.register_callback(callback_mock)
+
+        def mock_stream_enter(*args, **kwargs):
+            cb = mock_input_stream.call_args[1]["callback"]
+            chunk = np.zeros((1280, 1), dtype=np.int16)
+            cb(chunk, 1280, {}, None)
+
+        mock_input_stream.return_value.__enter__.side_effect = mock_stream_enter
+
+        detector.start()
+        callback_mock.assert_called_once()
+        self.assertFalse(detector._is_running)
+
+    @patch("speech.wake_word.sd.InputStream")
+    def test_wake_word_below_threshold_does_not_trigger(self, mock_input_stream):
+        """Test that scores < threshold do not trigger the callback."""
+        from speech.wake_word import WakeWordDetector
+
+        detector = WakeWordDetector(wake_word="hey_jarvis", threshold=0.5)
+        mock_model = MagicMock()
+        mock_model.predict.return_value = {"hey_jarvis": 0.2}
+        detector._model = mock_model
+
+        callback_mock = MagicMock()
+        detector.register_callback(callback_mock)
+
+        def mock_stream_enter(*args, **kwargs):
+            cb = mock_input_stream.call_args[1]["callback"]
+            chunk = np.zeros((1280, 1), dtype=np.int16)
+            cb(chunk, 1280, {}, None)
+            detector.stop()
+
+        mock_input_stream.return_value.__enter__.side_effect = mock_stream_enter
+
+        detector.start()
+        callback_mock.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
+

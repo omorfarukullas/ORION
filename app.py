@@ -48,7 +48,7 @@ def main() -> None:
 
     print("\n  ORION initialized.\n")
 
-    # ── Phase 2: Text-to-speech initialization & greeting ──────────────────────
+    # ── Phase 2: Speech Output ──────────────────────────────────────────────────
     from speech.text_to_speech import TextToSpeech
     tts = TextToSpeech(
         rate=settings.TTS_RATE,
@@ -57,7 +57,7 @@ def main() -> None:
     )
     tts.speak("Hello. I am ORION.")
 
-    # ── Phase 3: Speech Input (Listening & Transcription) ─────────────────────
+    # ── Phase 3: Speech Input (STT & Listener) ──────────────────────────────────
     from speech.listener import Listener
     from speech.speech_to_text import SpeechToText
 
@@ -68,7 +68,6 @@ def main() -> None:
     )
     stt.load()
 
-    tts.speak("I am listening.")
     listener = Listener(
         sample_rate=settings.SAMPLE_RATE,
         max_seconds=settings.RECORD_SECONDS,
@@ -76,21 +75,43 @@ def main() -> None:
         silence_duration=settings.VAD_SILENCE_DURATION,
         chunk_size=settings.CHUNK_SIZE,
     )
-    audio = listener.record()
 
-    if len(audio) > 0:
-        transcript = stt.transcribe(audio)
-        logger.info(f"Final Transcript: '{transcript}'")
-        if transcript:
-            tts.speak(f"You said: {transcript}")
-        else:
-            tts.speak("I did not hear any speech.")
-    else:
-        logger.warning("No audio recorded.")
+    # ── Phase 4: Wake Word Standby Loop ─────────────────────────────────────────
+    from speech.wake_word import WakeWordDetector
 
-    # ── Placeholder: future phases hook in here ────────────────────────────────
-    # Phase 4  → from speech.wake_word import WakeWordDetector; wwd.run()
-    # Phase 5+ → from planner.task_planner import TaskPlanner; planner.run()
+    detector = WakeWordDetector(
+        wake_word=settings.WAKE_WORD,
+        threshold=settings.WAKE_WORD_THRESHOLD,
+        sample_rate=settings.SAMPLE_RATE,
+        chunk_size=settings.CHUNK_SIZE,
+    )
+
+    logger.info("ORION ready. Entering continuous standby loop. Press Ctrl+C to exit.")
+
+    try:
+        while True:
+            logger.info(f"Standby — listening for wake word '{settings.WAKE_WORD}'...")
+            detector.start()
+
+            logger.info("Wake word triggered! Prompting user and recording command...")
+            tts.speak("Yes?")
+
+            audio = listener.record()
+
+            if len(audio) > 0:
+                transcript = stt.transcribe(audio)
+                logger.info(f"Final Transcript: '{transcript}'")
+                if transcript:
+                    tts.speak(f"You said: {transcript}")
+                else:
+                    tts.speak("I did not hear any speech.")
+            else:
+                logger.warning("No audio recorded.")
+
+    except KeyboardInterrupt:
+        logger.info("KeyboardInterrupt received. Shutting down ORION...")
+        detector.stop()
+        tts.speak("Goodbye.")
 
 
 if __name__ == "__main__":
