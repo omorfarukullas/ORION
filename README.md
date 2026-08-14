@@ -15,7 +15,7 @@
 | **Phase 3** | **Speech Input** | Mic listening with Voice Activity Detection (VAD) & local Whisper transcription | **✅ Complete** |
 | **Phase 4** | **Wake Word** | Idle/standby wake word loop (`openWakeWord`) | **✅ Complete** |
 | **Phase 5** | **Rule-Based Engine** | Hard-coded command execution | **✅ Complete** |
-| **Phase 6** | **NLP Classifier** | TF-IDF & Logistic Regression intent classifier | 🔲 Pending |
+| **Phase 6** | **NLP Classifier** | TF-IDF & Logistic Regression intent classifier | **✅ Complete** |
 | **Phase 7** | **Entity Extractor** | Named-entity matching & command parser | 🔲 Pending |
 | **Phase 8** | **PC Automation** | Execution adapters (Browser, Apps, Media, Screenshots, Files, System) | 🔲 Pending |
 | **Phase 9** | **Safety Gating** | Permissions validation, destructiveness warnings, confirmation handlers | 🔲 Pending |

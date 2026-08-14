@@ -5,72 +5,159 @@ start chrome,OPEN_APP
 open visual studio code,OPEN_APP
 launch vscode,OPEN_APP
 open notepad,OPEN_APP
+start calculator,OPEN_APP
+open file explorer,OPEN_APP
+launch spotify,OPEN_APP
+open discord,OPEN_APP
+start task manager,OPEN_APP
+launch terminal,OPEN_APP
+open firefox,OPEN_APP
 close chrome,CLOSE_APP
 close vscode,CLOSE_APP
 quit notepad,CLOSE_APP
+exit calculator,CLOSE_APP
+close spotify,CLOSE_APP
+terminate discord,CLOSE_APP
+kill chrome,CLOSE_APP
+close application,CLOSE_APP
+shutdown app,CLOSE_APP
+close active window,CLOSE_APP
 open website youtube.com,OPEN_WEBSITE
 go to github.com,OPEN_WEBSITE
 navigate to google.com,OPEN_WEBSITE
+open website reddit.com,OPEN_WEBSITE
+open stackoverflow.com,OPEN_WEBSITE
+go to wikipedia.org,OPEN_WEBSITE
+visit news.ycombinator.com,OPEN_WEBSITE
+open url amazon.com,OPEN_WEBSITE
 search google for python tutorials,WEB_SEARCH
 google machine learning projects,WEB_SEARCH
 search for best restaurants near me,WEB_SEARCH
+search the web for weather today,WEB_SEARCH
+find online how to fix windows error,WEB_SEARCH
+google search artificial intelligence,WEB_SEARCH
+look up quantum computing,WEB_SEARCH
+search for latest tech news,WEB_SEARCH
+search google for stock market updates,WEB_SEARCH
 search youtube for lofi music,YOUTUBE_SEARCH
 find on youtube how to code,YOUTUBE_SEARCH
 youtube search python for beginners,YOUTUBE_SEARCH
+play youtube video on mechanical keyboards,YOUTUBE_SEARCH
+search youtube for gaming highlights,YOUTUBE_SEARCH
+watch youtube tutorial on docker,YOUTUBE_SEARCH
+look up jazz music on youtube,YOUTUBE_SEARCH
+youtube search cooking recipes,YOUTUBE_SEARCH
 how much cpu am i using,SYSTEM_CPU
 what is my processor usage,SYSTEM_CPU
 check cpu usage,SYSTEM_CPU
+show cpu load,SYSTEM_CPU
+is my cpu busy,SYSTEM_CPU
+check processor performance,SYSTEM_CPU
+current cpu utilization,SYSTEM_CPU
 how much ram am i using,SYSTEM_RAM
 what is my memory usage,SYSTEM_RAM
 check memory,SYSTEM_RAM
+how much ram is free,SYSTEM_RAM
+show memory consumption,SYSTEM_RAM
+check available ram,SYSTEM_RAM
+memory usage status,SYSTEM_RAM
 how much battery do i have,SYSTEM_BATTERY
 what is my battery level,SYSTEM_BATTERY
 check battery,SYSTEM_BATTERY
+is the laptop charging,SYSTEM_BATTERY
+battery status,SYSTEM_BATTERY
+remaining battery percentage,SYSTEM_BATTERY
+check power level,SYSTEM_BATTERY
 show system info,SYSTEM_INFO
 tell me about my system,SYSTEM_INFO
 system information,SYSTEM_INFO
+display system specs,SYSTEM_INFO
+what are my system hardware stats,SYSTEM_INFO
+overview of system health,SYSTEM_INFO
 create a folder called projects,CREATE_FOLDER
 make a new folder named work,CREATE_FOLDER
 create folder documents,CREATE_FOLDER
+make folder test,CREATE_FOLDER
+new directory called backup,CREATE_FOLDER
+create a new folder in desktop,CREATE_FOLDER
+make directory source_code,CREATE_FOLDER
 create a file called notes.txt,CREATE_FILE
 make a new file report.docx,CREATE_FILE
 create file readme,CREATE_FILE
+make file script.py,CREATE_FILE
+new file document.pdf,CREATE_FILE
+create blank file log.txt,CREATE_FILE
 find the file resume.pdf,FIND_FILE
 search for notes.txt,FIND_FILE
 locate my document,FIND_FILE
+where is project.zip,FIND_FILE
+find file data.csv,FIND_FILE
+search for presentation.pptx,FIND_FILE
 rename file old.txt to new.txt,RENAME_FILE
 rename the folder projects to work,RENAME_FILE
 rename my document,RENAME_FILE
+change file name draft to final,RENAME_FILE
+rename folder test to production,RENAME_FILE
 delete the file old.txt,DELETE_FILE
 remove the folder temp,DELETE_FILE
 delete file readme.txt,DELETE_FILE
+remove directory build,DELETE_FILE
+delete folder downloads_old,DELETE_FILE
+erase file draft.txt,DELETE_FILE
 play music,PLAY_MEDIA
 play the song,PLAY_MEDIA
 start playing,PLAY_MEDIA
+resume playback,PLAY_MEDIA
+unpause media,PLAY_MEDIA
+play track,PLAY_MEDIA
 pause the music,PAUSE_MEDIA
 pause playback,PAUSE_MEDIA
 pause,PAUSE_MEDIA
+stop playing music,PAUSE_MEDIA
+freeze audio,PAUSE_MEDIA
 next track,NEXT_TRACK
 skip song,NEXT_TRACK
 next song,NEXT_TRACK
+play next track,NEXT_TRACK
+skip to next,NEXT_TRACK
 previous track,PREVIOUS_TRACK
 go back,PREVIOUS_TRACK
 play previous song,PREVIOUS_TRACK
+last track,PREVIOUS_TRACK
+go to previous song,PREVIOUS_TRACK
 volume up,VOLUME_UP
 increase volume,VOLUME_UP
 louder please,VOLUME_UP
+turn up the volume,VOLUME_UP
+raise volume,VOLUME_UP
+make it louder,VOLUME_UP
 volume down,VOLUME_DOWN
 decrease volume,VOLUME_DOWN
 turn it down,VOLUME_DOWN
+lower volume,VOLUME_DOWN
+make it quieter,VOLUME_DOWN
+reduce sound level,VOLUME_DOWN
 mute the sound,MUTE
 silence,MUTE
 mute,MUTE
+turn off sound,MUTE
+unmute audio,MUTE
+toggle mute,MUTE
 what time is it,TIME
 current time,TIME
 tell me the time,TIME
+what is the time right now,TIME
+clock check,TIME
+display time,TIME
 what is today's date,DATE
 what day is it,DATE
 tell me the date,DATE
+what is current date,DATE
+today date check,DATE
+show date,DATE
 take a screenshot,SCREENSHOT
 capture my screen,SCREENSHOT
 screenshot,SCREENSHOT
+save screen capture,SCREENSHOT
+take picture of screen,SCREENSHOT
+grab screenshot,SCREENSHOT

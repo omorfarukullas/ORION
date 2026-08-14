@@ -86,11 +86,21 @@ def main() -> None:
         chunk_size=settings.CHUNK_SIZE,
     )
 
-    # ── Phase 5: Basic Command Engine ───────────────────────────────────────────
+    # ── Phase 5 & 6: Intent Classification & Command Engine ────────────────────
     from nlp.rule_engine import RuleEngine
-    from nlp.command_dispatcher import dispatch
+    from nlp.intent_classifier import IntentClassifier
+    from nlp.command_dispatcher import dispatch, dispatch_with_confidence
 
     rule_engine = RuleEngine()
+    classifier = IntentClassifier()
+
+    use_ml = False
+    try:
+        classifier.load()
+        use_ml = True
+        logger.info("Using Phase 6 ML IntentClassifier.")
+    except Exception as e:
+        logger.warning(f"Could not load ML IntentClassifier ({e}). Falling back to Phase 5 RuleEngine.")
 
     logger.info("ORION ready. Entering continuous standby loop. Press Ctrl+C to exit.")
 
@@ -108,8 +118,14 @@ def main() -> None:
                 transcript = stt.transcribe(audio)
                 logger.info(f"Final Transcript: '{transcript}'")
                 if transcript:
-                    cmd = rule_engine.parse(transcript)
-                    reply = dispatch(cmd)
+                    if use_ml:
+                        intent, confidence = classifier.predict(transcript)
+                        rule_cmd = rule_engine.parse(transcript)
+                        reply = dispatch_with_confidence(intent, confidence, rule_cmd.entity, transcript)
+                    else:
+                        cmd = rule_engine.parse(transcript)
+                        reply = dispatch(cmd)
+
                     logger.info(f"Command execution reply: '{reply}'")
                     tts.speak(reply)
                 else:
