@@ -231,23 +231,32 @@ def main() -> None:
         )
         backend_thread.start()
         # Main thread runs CustomTkinter GUI loop
-        dashboard.run()
+        try:
+            dashboard.run()
+        except KeyboardInterrupt:
+            logger.info("KeyboardInterrupt received from GUI loop. Shutting down ORION...")
     else:
         # Run directly on main thread if headless
-        voice_orchestration_loop(
-            settings,
-            tts,
-            stt,
-            listener,
-            detector,
-            command_parser,
-            task_planner,
-            confirmation_handler,
-            context,
-            db,
-            None,
-        )
+        try:
+            voice_orchestration_loop(
+                settings,
+                tts,
+                stt,
+                listener,
+                detector,
+                command_parser,
+                task_planner,
+                confirmation_handler,
+                context,
+                db,
+                None,
+            )
+        except KeyboardInterrupt:
+            logger.info("KeyboardInterrupt received. Shutting down ORION...")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n[ORION] Exited cleanly.")

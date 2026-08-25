@@ -5,7 +5,7 @@ Local Wake Word Detector for ORION.
 
 Continuously monitors microphone audio in standby and wakes when the keyword
 "ORION" (or variations like "Hey ORION") is detected using a local, lightweight
-Whisper model with energy-based Voice Activity Detection gating.
+Whisper model with sliding-window Voice Activity Detection.
 """
 from __future__ import annotations
 import re
@@ -30,13 +30,27 @@ class WakeWordDetector:
     from ``start()`` so the main orchestration loop can prompt the user.
     """
 
+    # Common phonetic or spelling variations output by Whisper
+    WAKE_WORD_ALIASES = {
+        "orion",
+        "orian",
+        "orean",
+        "aurion",
+        "orien",
+        "orient",
+        "orions",
+        "o'rion",
+        "o-rion",
+        "aryan",
+    }
+
     def __init__(
         self,
         wake_word: str = Settings.WAKE_WORD,
         threshold: float = Settings.WAKE_WORD_THRESHOLD,
         sample_rate: int = Settings.SAMPLE_RATE,
         chunk_size: int = Settings.CHUNK_SIZE,
-        chunk_seconds: float = getattr(Settings, "WAKE_WORD_CHUNK_SECONDS", 1.5),
+        chunk_seconds: float = 2.0,
         model_size: str = "tiny",
     ) -> None:
         """
@@ -45,7 +59,7 @@ class WakeWordDetector:
             threshold:     Unused float kept for API compatibility.
             sample_rate:   Audio sampling rate in Hz (default: 16000).
             chunk_size:    Buffer frame size (default: 1280).
-            chunk_seconds: Audio duration per keyword evaluation window (default: 1.5s).
+            chunk_seconds: Audio duration per keyword evaluation window (default: 2.0s).
             model_size:    Whisper model size for fast keyword spotting (default: "tiny").
         """
         self.wake_word = wake_word.lower()
@@ -75,18 +89,26 @@ class WakeWordDetector:
 
     def _is_wake_word_present(self, text: str) -> bool:
         """
-        Check if the transcribed text matches the wake word 'orion'.
+        Check if the transcribed text matches the wake word 'orion' or its aliases.
         """
         if not text:
             return False
         clean = text.lower().strip()
-        words = re.findall(r"\b\w+\b", clean)
-        # Direct word match or substring match (e.g. 'orion', 'orions', 'hey orion')
-        return self.wake_word in words or self.wake_word in clean
+        # Direct substring check
+        if self.wake_word in clean:
+            return True
+
+        words = set(re.findall(r"\b\w+\b", clean))
+        # Check against known phonetic aliases
+        if words.intersection(self.WAKE_WORD_ALIASES):
+            return True
+
+        return False
 
     def start(self) -> None:
         """
         Start listening for the wake word (blocking until detected or stopped).
+        Uses a sliding rolling buffer to avoid cutting off words at window boundaries.
         """
         self.load_model()
         self._stop_event.clear()
@@ -96,9 +118,11 @@ class WakeWordDetector:
             f"WakeWordDetector active — listening for keyword '{self.wake_word}'..."
         )
 
-        frames_per_window = int(self.sample_rate * self.chunk_seconds)
+        max_buffer_samples = int(self.sample_rate * self.chunk_seconds)
         audio_buffer: list[np.ndarray] = []
-        silence_rms_threshold = 0.015  # Energy threshold to avoid transcribing dead silence
+        silence_rms_threshold = 0.005  # Sensitive energy threshold for voice detection
+        last_eval_time = time.time()
+        eval_interval = 0.5  # Re-evaluate every 500ms
 
         def audio_callback(indata: np.ndarray, frames: int, time_info: dict, status: sd.CallbackFlags) -> None:
             if status:
@@ -116,42 +140,52 @@ class WakeWordDetector:
                 callback=audio_callback,
             ):
                 while not self._stop_event.is_set():
-                    time.sleep(0.3)
+                    time.sleep(0.1)
 
-                    # Calculate total collected samples
+                    now = time.time()
+                    if now - last_eval_time < eval_interval:
+                        continue
+
+                    # Maintain rolling window of maximum `chunk_seconds`
                     total_samples = sum(len(b) for b in audio_buffer)
-                    if total_samples >= frames_per_window:
-                        # Grab window and clear buffer
-                        window_chunks = list(audio_buffer)
-                        audio_buffer.clear()
+                    if total_samples < int(self.sample_rate * 0.8):
+                        # Need at least 0.8s of audio to evaluate
+                        continue
 
-                        audio_data = np.concatenate(window_chunks, axis=0).flatten()
+                    while total_samples > max_buffer_samples and len(audio_buffer) > 1:
+                        removed = audio_buffer.pop(0)
+                        total_samples -= len(removed)
 
-                        # Quick RMS energy check — skip inference if room is silent
-                        rms = float(np.sqrt(np.mean(audio_data ** 2)))
-                        if rms < silence_rms_threshold:
-                            continue
+                    audio_data = np.concatenate(list(audio_buffer), axis=0).flatten()
 
-                        # Transcribe the audio chunk
-                        try:
-                            result = self._model.transcribe(
-                                audio_data,
-                                fp16=False,
-                                language="en",
-                                without_timestamps=True,
-                            )
-                            transcript = result.get("text", "").strip()
-                            if transcript:
-                                logger.debug(f"Wake word spotter heard: '{transcript}' (RMS: {rms:.4f})")
+                    # Quick RMS energy check — skip inference if room is quiet
+                    rms = float(np.sqrt(np.mean(audio_data ** 2)))
+                    if rms < silence_rms_threshold:
+                        last_eval_time = now
+                        continue
 
-                            if self._is_wake_word_present(transcript):
-                                logger.info(f"Wake word '{self.wake_word}' detected in transcript: '{transcript}'")
-                                self._stop_event.set()
-                                if self._on_wake:
-                                    self._on_wake()
-                                break
-                        except Exception as e:
-                            logger.error(f"Error during wake word transcription: {e}")
+                    last_eval_time = now
+
+                    # Transcribe the audio chunk with Whisper
+                    try:
+                        result = self._model.transcribe(
+                            audio_data,
+                            fp16=False,
+                            language="en",
+                            without_timestamps=True,
+                        )
+                        transcript = result.get("text", "").strip()
+                        if transcript:
+                            logger.info(f"Hearing: '{transcript}' (RMS: {rms:.4f})")
+
+                        if self._is_wake_word_present(transcript):
+                            logger.info(f"Wake word '{self.wake_word}' detected in transcript: '{transcript}'")
+                            self._stop_event.set()
+                            if self._on_wake:
+                                self._on_wake()
+                            break
+                    except Exception as e:
+                        logger.error(f"Error during wake word transcription: {e}")
 
         except Exception as e:
             logger.error(f"InputStream error in WakeWordDetector: {e}")
