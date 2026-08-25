@@ -1,15 +1,20 @@
 """
 speech/wake_word.py
 ===================
-Integrates openWakeWord so ORION idles in standby and wakes only when
-the configured wake word is detected locally on-device.
+Local Wake Word Detector for ORION.
+
+Continuously monitors microphone audio in standby and wakes when the keyword
+"ORION" (or variations like "Hey ORION") is detected using a local, lightweight
+Whisper model with energy-based Voice Activity Detection gating.
 """
 from __future__ import annotations
+import re
 import threading
 import time
-from typing import Callable
+from typing import Callable, Optional
 import numpy as np
 import sounddevice as sd
+import whisper
 
 from config.settings import Settings
 from utils.logger import get_logger
@@ -19,10 +24,10 @@ logger = get_logger(__name__)
 
 class WakeWordDetector:
     """
-    Listens continuously on the microphone for the configured wake word.
+    Listens continuously on the microphone for the keyword "ORION".
 
-    When detected, calls the registered ``on_wake`` callback so the main
-    loop can hand off to the :class:`speech.listener.Listener`.
+    When detected, calls the registered ``on_wake`` callback and returns
+    from ``start()`` so the main orchestration loop can prompt the user.
     """
 
     def __init__(
@@ -31,19 +36,26 @@ class WakeWordDetector:
         threshold: float = Settings.WAKE_WORD_THRESHOLD,
         sample_rate: int = Settings.SAMPLE_RATE,
         chunk_size: int = Settings.CHUNK_SIZE,
+        chunk_seconds: float = getattr(Settings, "WAKE_WORD_CHUNK_SECONDS", 1.5),
+        model_size: str = "tiny",
     ) -> None:
         """
         Args:
-            wake_word:   openWakeWord model name (default: "hey_jarvis").
-            threshold:   Activation sensitivity 0–1 (default: 0.5).
-            sample_rate: Audio sampling rate in Hz (default: 16000).
-            chunk_size:  Frames per audio chunk (default: 1280, ~80ms @ 16kHz).
+            wake_word:     Target keyword (default: "orion").
+            threshold:     Unused float kept for API compatibility.
+            sample_rate:   Audio sampling rate in Hz (default: 16000).
+            chunk_size:    Buffer frame size (default: 1280).
+            chunk_seconds: Audio duration per keyword evaluation window (default: 1.5s).
+            model_size:    Whisper model size for fast keyword spotting (default: "tiny").
         """
-        self.wake_word = wake_word
+        self.wake_word = wake_word.lower()
         self.threshold = threshold
         self.sample_rate = sample_rate
         self.chunk_size = chunk_size
-        self._on_wake: Callable[[], None] | None = None
+        self.chunk_seconds = chunk_seconds
+        self.model_size = model_size
+
+        self._on_wake: Optional[Callable[[], None]] = None
         self._model = None
         self._is_running = False
         self._stop_event = threading.Event()
@@ -53,17 +65,24 @@ class WakeWordDetector:
         self._on_wake = callback
 
     def load_model(self) -> None:
-        """Lazy load openWakeWord model into memory."""
+        """Lazy load Whisper model into memory."""
         if self._model is not None:
             return
 
-        logger.info(f"Loading openWakeWord model '{self.wake_word}'...")
-        import openwakeword
-        from openwakeword.model import Model
+        logger.info(f"Loading local Whisper wake word model '{self.model_size}'...")
+        self._model = whisper.load_model(self.model_size, device="cpu")
+        logger.info(f"Local Whisper wake word model '{self.model_size}' loaded successfully.")
 
-        openwakeword.utils.download_models()
-        self._model = Model(wakeword_models=[self.wake_word], inference_framework="onnx")
-        logger.info(f"openWakeWord model '{self.wake_word}' loaded successfully.")
+    def _is_wake_word_present(self, text: str) -> bool:
+        """
+        Check if the transcribed text matches the wake word 'orion'.
+        """
+        if not text:
+            return False
+        clean = text.lower().strip()
+        words = re.findall(r"\b\w+\b", clean)
+        # Direct word match or substring match (e.g. 'orion', 'orions', 'hey orion')
+        return self.wake_word in words or self.wake_word in clean
 
     def start(self) -> None:
         """
@@ -74,47 +93,71 @@ class WakeWordDetector:
         self._is_running = True
 
         logger.info(
-            f"WakeWordDetector active — listening for '{self.wake_word}' (threshold={self.threshold})..."
+            f"WakeWordDetector active — listening for keyword '{self.wake_word}'..."
         )
+
+        frames_per_window = int(self.sample_rate * self.chunk_seconds)
+        audio_buffer: list[np.ndarray] = []
+        silence_rms_threshold = 0.015  # Energy threshold to avoid transcribing dead silence
 
         def audio_callback(indata: np.ndarray, frames: int, time_info: dict, status: sd.CallbackFlags) -> None:
             if status:
-                logger.warning(f"Audio callback status warning: {status}")
+                logger.debug(f"Audio callback status: {status}")
             if not self._is_running or self._stop_event.is_set():
                 return
+            audio_buffer.append(indata.copy())
 
-            chunk = indata.flatten()
-            prediction = self._model.predict(chunk)
+        try:
+            with sd.InputStream(
+                samplerate=self.sample_rate,
+                channels=1,
+                dtype="float32",
+                blocksize=self.chunk_size,
+                callback=audio_callback,
+            ):
+                while not self._stop_event.is_set():
+                    time.sleep(0.3)
 
-            score = 0.0
-            if isinstance(prediction, dict):
-                score = prediction.get(self.wake_word, 0.0)
-                if self.wake_word not in prediction:
-                    for key, val in prediction.items():
-                        if self.wake_word in key:
-                            score = val
-                            break
+                    # Calculate total collected samples
+                    total_samples = sum(len(b) for b in audio_buffer)
+                    if total_samples >= frames_per_window:
+                        # Grab window and clear buffer
+                        window_chunks = list(audio_buffer)
+                        audio_buffer.clear()
 
-            if score >= self.threshold:
-                logger.info(
-                    f"Wake word '{self.wake_word}' detected with score {score:.3f} >= threshold {self.threshold}"
-                )
-                self._stop_event.set()
-                if self._on_wake:
-                    self._on_wake()
+                        audio_data = np.concatenate(window_chunks, axis=0).flatten()
 
-        with sd.InputStream(
-            samplerate=self.sample_rate,
-            channels=1,
-            dtype="int16",
-            blocksize=self.chunk_size,
-            callback=audio_callback,
-        ):
-            while not self._stop_event.is_set():
-                time.sleep(0.05)
+                        # Quick RMS energy check — skip inference if room is silent
+                        rms = float(np.sqrt(np.mean(audio_data ** 2)))
+                        if rms < silence_rms_threshold:
+                            continue
 
-        self._is_running = False
-        logger.info("WakeWordDetector loop ended.")
+                        # Transcribe the audio chunk
+                        try:
+                            result = self._model.transcribe(
+                                audio_data,
+                                fp16=False,
+                                language="en",
+                                without_timestamps=True,
+                            )
+                            transcript = result.get("text", "").strip()
+                            if transcript:
+                                logger.debug(f"Wake word spotter heard: '{transcript}' (RMS: {rms:.4f})")
+
+                            if self._is_wake_word_present(transcript):
+                                logger.info(f"Wake word '{self.wake_word}' detected in transcript: '{transcript}'")
+                                self._stop_event.set()
+                                if self._on_wake:
+                                    self._on_wake()
+                                break
+                        except Exception as e:
+                            logger.error(f"Error during wake word transcription: {e}")
+
+        except Exception as e:
+            logger.error(f"InputStream error in WakeWordDetector: {e}")
+        finally:
+            self._is_running = False
+            logger.info("WakeWordDetector standby loop ended.")
 
     def stop(self) -> None:
         """Stop the detection loop gracefully."""

@@ -45,8 +45,9 @@ class Settings:
     VAD_SILENCE_DURATION: float = 1.5     # Seconds of silence to trigger stop
 
     # ── Wake word ──────────────────────────────────────────────────────────────
-    WAKE_WORD: str = "hey_jarvis"      # openWakeWord built-in model name
+    WAKE_WORD: str = "orion"           # Wake word keyword name
     WAKE_WORD_THRESHOLD: float = 0.5   # Activation sensitivity (0–1)
+    WAKE_WORD_CHUNK_SECONDS: float = 1.5  # Seconds of audio per detection window
 
     # ── Whisper STT ───────────────────────────────────────────────────────────
     # Options: "tiny", "base", "small", "medium", "large"

@@ -117,7 +117,7 @@ class TestWakeWordDetector(unittest.TestCase):
         """Test that register_callback correctly registers a function."""
         from speech.wake_word import WakeWordDetector
 
-        detector = WakeWordDetector()
+        detector = WakeWordDetector(wake_word="orion")
         cb = MagicMock()
         detector.register_callback(cb)
         self.assertEqual(detector._on_wake, cb)
@@ -126,18 +126,29 @@ class TestWakeWordDetector(unittest.TestCase):
         """Test that calling stop() before start() is safe."""
         from speech.wake_word import WakeWordDetector
 
-        detector = WakeWordDetector()
+        detector = WakeWordDetector(wake_word="orion")
         detector.stop()
         self.assertFalse(detector._is_running)
 
-    @patch("speech.wake_word.sd.InputStream")
-    def test_wake_word_detection_triggers_callback(self, mock_input_stream):
-        """Test that a score >= threshold triggers the callback and stops the loop."""
+    def test_is_wake_word_present(self):
+        """Test wake word presence check."""
         from speech.wake_word import WakeWordDetector
 
-        detector = WakeWordDetector(wake_word="hey_jarvis", threshold=0.5)
+        detector = WakeWordDetector(wake_word="orion")
+        self.assertTrue(detector._is_wake_word_present("Hey Orion"))
+        self.assertTrue(detector._is_wake_word_present("Orion what time is it"))
+        self.assertTrue(detector._is_wake_word_present("orion"))
+        self.assertFalse(detector._is_wake_word_present("Hello Jarvis"))
+        self.assertFalse(detector._is_wake_word_present(""))
+
+    @patch("speech.wake_word.sd.InputStream")
+    def test_wake_word_detection_triggers_callback(self, mock_input_stream):
+        """Test that detecting 'orion' triggers the callback and stops the loop."""
+        from speech.wake_word import WakeWordDetector
+
+        detector = WakeWordDetector(wake_word="orion", chunk_seconds=0.01)
         mock_model = MagicMock()
-        mock_model.predict.return_value = {"hey_jarvis": 0.8}
+        mock_model.transcribe.return_value = {"text": "Hey Orion"}
         detector._model = mock_model
 
         callback_mock = MagicMock()
@@ -145,7 +156,8 @@ class TestWakeWordDetector(unittest.TestCase):
 
         def mock_stream_enter(*args, **kwargs):
             cb = mock_input_stream.call_args[1]["callback"]
-            chunk = np.zeros((1280, 1), dtype=np.int16)
+            # Non-silent chunk to pass RMS check
+            chunk = np.ones((1280, 1), dtype=np.float32) * 0.1
             cb(chunk, 1280, {}, None)
 
         mock_input_stream.return_value.__enter__.side_effect = mock_stream_enter
@@ -155,13 +167,13 @@ class TestWakeWordDetector(unittest.TestCase):
         self.assertFalse(detector._is_running)
 
     @patch("speech.wake_word.sd.InputStream")
-    def test_wake_word_below_threshold_does_not_trigger(self, mock_input_stream):
-        """Test that scores < threshold do not trigger the callback."""
+    def test_wake_word_non_matching_does_not_trigger(self, mock_input_stream):
+        """Test that non-wake-word transcripts do not trigger the callback."""
         from speech.wake_word import WakeWordDetector
 
-        detector = WakeWordDetector(wake_word="hey_jarvis", threshold=0.5)
+        detector = WakeWordDetector(wake_word="orion", chunk_seconds=0.01)
         mock_model = MagicMock()
-        mock_model.predict.return_value = {"hey_jarvis": 0.2}
+        mock_model.transcribe.return_value = {"text": "Hello world"}
         detector._model = mock_model
 
         callback_mock = MagicMock()
@@ -169,7 +181,7 @@ class TestWakeWordDetector(unittest.TestCase):
 
         def mock_stream_enter(*args, **kwargs):
             cb = mock_input_stream.call_args[1]["callback"]
-            chunk = np.zeros((1280, 1), dtype=np.int16)
+            chunk = np.ones((1280, 1), dtype=np.float32) * 0.1
             cb(chunk, 1280, {}, None)
             detector.stop()
 
@@ -181,4 +193,5 @@ class TestWakeWordDetector(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

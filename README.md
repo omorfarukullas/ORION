@@ -9,7 +9,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Tests](https://img.shields.io/badge/Tests-92%20Passed-2EA44F?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Tests](https://img.shields.io/badge/Tests-93%20Passed-2EA44F?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-7057ff?style=for-the-badge)](https://github.com/omorfarukullas/ORION)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -37,14 +37,14 @@
 
 **ORION** (*Operational Responsive Intelligent Orchestration Network*) is a modular, offline-first personal voice assistant designed specifically for PC automation. Unlike cloud-tethered voice assistants, ORION processes everything **locally on your machine** — ensuring maximum privacy, zero data telemetry, and predictable execution.
 
-ORION continuously listens in a lightweight standby mode, detects your custom wake word, captures command speech using energy-based Voice Activity Detection (VAD), transcribes audio with local OpenAI Whisper, parses intents and entities through a trained scikit-learn NLP model, checks destructive actions against a security gate with spoken confirmation, executes system-level PC automations, and speaks the results using synthesized offline speech while displaying live telemetry on a desktop dashboard.
+ORION continuously listens in a lightweight standby mode, detects the wake word (**`"ORION"`**), captures command speech using energy-based Voice Activity Detection (VAD), transcribes audio with local OpenAI Whisper, parses intents and entities through a trained scikit-learn NLP model, checks destructive actions against a security gate with spoken confirmation, executes system-level PC automations, and speaks the results using synthesized offline speech while displaying live telemetry on a desktop dashboard.
 
 ---
 
 ## ✨ Key Features
 
 - **🎙️ Zero-Cloud Voice Pipeline**:
-  - **Wake Word Detection**: Ultra-low-latency local standby listening powered by `openWakeWord` (`"hey_jarvis"`).
+  - **Wake Word Detection**: Ultra-low-latency local standby listening for keyword **`"ORION"`** (or *"Hey ORION"*).
   - **Speech-to-Text**: Fast offline transcription via OpenAI Whisper (`base` model, ~140MB local weights).
   - **Text-to-Speech**: Instant, clear speech responses powered by `pyttsx3` with adjustable rate and volume.
   - **Smart VAD**: Dynamic RMS Voice Activity Detection that automatically trims leading/trailing silence.
