@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import shutil
 from pathlib import Path
+from security.permissions import can_write
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -29,6 +30,10 @@ def create_folder(name: str, parent: Path | None = None) -> str:
     target_parent = parent or _get_default_parent()
     folder_path = target_parent / name
 
+    if not can_write(folder_path):
+        logger.warning(f"Permission denied: Writing to '{folder_path}' is not allowed.")
+        return f"Sorry, I am not allowed to create folders at {folder_path}."
+
     try:
         folder_path.mkdir(parents=True, exist_ok=True)
         logger.info(f"Created folder: {folder_path}")
@@ -45,6 +50,10 @@ def create_file(name: str, parent: Path | None = None) -> str:
 
     target_parent = parent or _get_default_parent()
     file_path = target_parent / name
+
+    if not can_write(file_path):
+        logger.warning(f"Permission denied: Writing to '{file_path}' is not allowed.")
+        return f"Sorry, I am not allowed to create files at {file_path}."
 
     try:
         target_parent.mkdir(parents=True, exist_ok=True)
@@ -112,6 +121,10 @@ def rename_file(old_name: str, new_name: str, parent: Path | None = None) -> str
     old_path = target_parent / old_name
     new_path = target_parent / new_name
 
+    if not can_write(old_path) or not can_write(new_path):
+        logger.warning(f"Permission denied: Modifying '{old_path}' -> '{new_path}' is not allowed.")
+        return f"Sorry, I am not allowed to modify files in that directory."
+
     if not old_path.exists():
         logger.warning(f"Cannot rename: '{old_path}' does not exist.")
         return f"Could not find {old_name} to rename."
@@ -135,6 +148,10 @@ def delete_file(name: str, parent: Path | None = None) -> str:
 
     target_parent = parent or _get_default_parent()
     target_path = target_parent / name
+
+    if not can_write(target_path):
+        logger.warning(f"Permission denied: Deleting '{target_path}' is not allowed.")
+        return f"Sorry, I am not allowed to delete files at {target_path}."
 
     if not target_path.exists():
         logger.warning(f"Cannot delete: '{target_path}' does not exist.")

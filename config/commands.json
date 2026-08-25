@@ -33,7 +33,7 @@
     },
     {
       "intent":   "RECALL",
-      "keywords": ["what is my", "where is my", "recall", "do you remember", "what is the"],
+      "keywords": ["what is my", "where is my", "recall", "do you remember"],
       "entity":   "__extract__"
     },
     {
@@ -83,8 +83,33 @@
     },
     {
       "intent":   "SHUTDOWN",
-      "keywords": ["shutdown", "shut down", "turn off the pc", "turn off pc", "power off"],
+      "keywords": ["shutdown", "shut down", "turn off the pc", "turn off pc", "turn off the computer", "turn off computer", "power off", "shut down the computer"],
       "entity":   null
+    },
+    {
+      "intent":   "DELETE_FILE",
+      "keywords": ["delete file", "delete folder", "remove file", "remove folder", "erase file"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "CREATE_FILE",
+      "keywords": ["create file", "make file", "create a file", "make a file", "new file"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "CREATE_FOLDER",
+      "keywords": ["create folder", "make folder", "create a folder", "make a folder", "new folder", "make directory"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "FIND_FILE",
+      "keywords": ["find file", "search for file", "locate file", "where is the file"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "RENAME_FILE",
+      "keywords": ["rename file", "rename folder", "rename"],
+      "entity":   "__extract__"
     },
     {
       "intent":   "RESTART",

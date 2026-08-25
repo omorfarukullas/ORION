@@ -105,7 +105,12 @@ def open_application(app_name: str) -> str:
     logger.info(f"Opening application '{app_name}' -> '{expanded_path}'")
 
     try:
-        subprocess.Popen([expanded_path], shell=False)
+        import shlex
+        if expanded_path.startswith(("ms-", "http://", "https://")):
+            os.startfile(expanded_path)
+        else:
+            cmd_args = shlex.split(expanded_path, posix=False)
+            subprocess.Popen(cmd_args, shell=False)
         formatted_name = app_name.title()
         return f"Opening {formatted_name}."
     except Exception as e:

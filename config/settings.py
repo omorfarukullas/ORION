@@ -48,6 +48,7 @@ class Settings:
     WAKE_WORD: str = "orion"           # Wake word keyword name
     WAKE_WORD_THRESHOLD: float = 0.5   # Activation sensitivity (0–1)
     WAKE_WORD_CHUNK_SECONDS: float = 1.5  # Seconds of audio per detection window
+    WAKE_WORD_MODEL: str = "tiny"        # Whisper model size for wake word detection
 
     # ── Whisper STT ───────────────────────────────────────────────────────────
     # Options: "tiny", "base", "small", "medium", "large"
@@ -57,8 +58,8 @@ class Settings:
     WHISPER_DEVICE: str = "cpu"        # "cpu" | "cuda" — switch if GPU available
 
     # ── Intent confidence thresholds (Operating Rule 5) ───────────────────────
-    CONFIDENCE_EXECUTE: float = 0.80   # > 80 % → execute immediately
-    CONFIDENCE_CONFIRM: float = 0.50   # 50–80 % → ask user to confirm
+    CONFIDENCE_EXECUTE: float = 0.70   # > 70 % → execute immediately (recalibrated for vector similarity)
+    CONFIDENCE_CONFIRM: float = 0.45   # 45–70 % → ask user to confirm
     # < CONFIDENCE_CONFIRM           → ask user to clarify
 
     # ── TTS (pyttsx3) ──────────────────────────────────────────────────────────

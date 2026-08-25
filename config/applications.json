@@ -22,7 +22,7 @@
   "powerpoint":       "POWERPNT.EXE",
   "outlook":          "OUTLOOK.EXE",
   "teams":            "%LOCALAPPDATA%\\Microsoft\\Teams\\current\\Teams.exe",
-  "discord":          "%LOCALAPPDATA%\\Discord\\Update.exe",
+  "discord":          "%LOCALAPPDATA%\\Discord\\Update.exe --processStart Discord.exe",
   "spotify":          "%APPDATA%\\Spotify\\Spotify.exe",
   "vlc":              "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
   "steam":            "C:\\Program Files (x86)\\Steam\\steam.exe",

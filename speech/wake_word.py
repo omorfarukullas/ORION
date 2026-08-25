@@ -91,7 +91,7 @@ class WakeWordDetector:
         sample_rate: int = Settings.SAMPLE_RATE,
         chunk_size: int = Settings.CHUNK_SIZE,
         chunk_seconds: float = 2.0,
-        model_size: str = "tiny",
+        model_size: str = Settings.WAKE_WORD_MODEL,
     ) -> None:
         self.wake_word = wake_word.lower()
         self.threshold = threshold

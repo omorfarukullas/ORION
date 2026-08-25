@@ -77,3 +77,7 @@ desktop.ini
 .env
 *.env
 secrets.json
+
+# === ORION Runtime Databases / Scratch ===
+models/chroma_db/
+scratch/

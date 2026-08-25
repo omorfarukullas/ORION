@@ -8,6 +8,7 @@ SQLite persistence layer for ORION's long-term memory and command history.
 from __future__ import annotations
 import json
 import sqlite3
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -25,6 +26,7 @@ class Database:
     def __init__(self, db_path: Path) -> None:
         self.db_path = Path(db_path)
         self._conn: Optional[sqlite3.Connection] = None
+        self._lock = threading.Lock()
         self.connect()
 
     def connect(self) -> None:
@@ -91,14 +93,15 @@ class Database:
         try:
             now = datetime.now().isoformat()
             ent_json = json.dumps(entities or {})
-            with self._conn:
-                self._conn.execute(
-                    """
-                    INSERT INTO command_history (timestamp, raw_text, intent, confidence, entities_json, outcome)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    """,
-                    (now, raw_text, intent, confidence, ent_json, outcome),
-                )
+            with self._lock:
+                with self._conn:
+                    self._conn.execute(
+                        """
+                        INSERT INTO command_history (timestamp, raw_text, intent, confidence, entities_json, outcome)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """,
+                        (now, raw_text, intent, confidence, ent_json, outcome),
+                    )
         except Exception as e:
             logger.error(f"Failed to log command to database: {e}")
 
@@ -108,12 +111,13 @@ class Database:
             return []
 
         try:
-            cursor = self._conn.cursor()
-            cursor.execute(
-                "SELECT * FROM command_history ORDER BY id DESC LIMIT ?", (limit,)
-            )
-            rows = cursor.fetchall()
-            return [dict(row) for row in rows]
+            with self._lock:
+                cursor = self._conn.cursor()
+                cursor.execute(
+                    "SELECT * FROM command_history ORDER BY id DESC LIMIT ?", (limit,)
+                )
+                rows = cursor.fetchall()
+                return [dict(row) for row in rows]
         except Exception as e:
             logger.error(f"Failed to fetch recent commands: {e}")
             return []
@@ -126,17 +130,18 @@ class Database:
         try:
             now = datetime.now().isoformat()
             clean_key = key.lower().strip()
-            with self._conn:
-                self._conn.execute(
-                    """
-                    INSERT INTO memories (key, value, created_at, updated_at)
-                    VALUES (?, ?, ?, ?)
-                    ON CONFLICT(key) DO UPDATE SET
-                        value = excluded.value,
-                        updated_at = excluded.updated_at
-                    """,
-                    (clean_key, value.strip(), now, now),
-                )
+            with self._lock:
+                with self._conn:
+                    self._conn.execute(
+                        """
+                        INSERT INTO memories (key, value, created_at, updated_at)
+                        VALUES (?, ?, ?, ?)
+                        ON CONFLICT(key) DO UPDATE SET
+                            value = excluded.value,
+                            updated_at = excluded.updated_at
+                        """,
+                        (clean_key, value.strip(), now, now),
+                    )
             logger.info(f"Memory saved: '{clean_key}' -> '{value}'")
         except Exception as e:
             logger.error(f"Failed to save memory: {e}")
@@ -152,17 +157,18 @@ class Database:
 
         try:
             clean_key = key.lower().strip()
-            cursor = self._conn.cursor()
-            cursor.execute("SELECT value FROM memories WHERE key = ?", (clean_key,))
-            row = cursor.fetchone()
-            if row:
-                return row["value"]
-            
-            # Fuzzy match / contains fallback
-            cursor.execute("SELECT value FROM memories WHERE key LIKE ? OR ? LIKE ('%' || key || '%')", (f"%{clean_key}%", clean_key))
-            fuzzy_row = cursor.fetchone()
-            if fuzzy_row:
-                return fuzzy_row["value"]
+            with self._lock:
+                cursor = self._conn.cursor()
+                cursor.execute("SELECT value FROM memories WHERE key = ?", (clean_key,))
+                row = cursor.fetchone()
+                if row:
+                    return row["value"]
+                
+                # Fuzzy match / contains fallback
+                cursor.execute("SELECT value FROM memories WHERE key LIKE ? OR ? LIKE ('%' || key || '%')", (f"%{clean_key}%", clean_key))
+                fuzzy_row = cursor.fetchone()
+                if fuzzy_row:
+                    return fuzzy_row["value"]
 
             return None
         except Exception as e:
@@ -179,10 +185,11 @@ class Database:
             return {}
 
         try:
-            cursor = self._conn.cursor()
-            cursor.execute("SELECT key, value FROM memories ORDER BY key ASC")
-            rows = cursor.fetchall()
-            return {row["key"]: row["value"] for row in rows}
+            with self._lock:
+                cursor = self._conn.cursor()
+                cursor.execute("SELECT key, value FROM memories ORDER BY key ASC")
+                rows = cursor.fetchall()
+                return {row["key"]: row["value"] for row in rows}
         except Exception as e:
             logger.error(f"Failed to list memories: {e}")
             return {}
@@ -194,9 +201,10 @@ class Database:
 
         try:
             clean_key = key.lower().strip()
-            with self._conn:
-                cursor = self._conn.execute("DELETE FROM memories WHERE key = ?", (clean_key,))
-                return cursor.rowcount > 0
+            with self._lock:
+                with self._conn:
+                    cursor = self._conn.execute("DELETE FROM memories WHERE key = ?", (clean_key,))
+                    return cursor.rowcount > 0
         except Exception as e:
             logger.error(f"Failed to delete memory '{key}': {e}")
             return False

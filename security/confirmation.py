@@ -48,8 +48,7 @@ class ConfirmationHandler:
                 logger.info(f"User confirmation response: '{response}'")
                 AFFIRMATIVE = (
                     "yes", "yeah", "yep", "sure", "ok", "okay", "confirm", 
-                    "do it", "continue", "proceed", "go ahead", "shut down", 
-                    "turn off", "restart", "delete", "yes please", "correct"
+                    "do it", "continue", "proceed", "go ahead", "yes please", "correct"
                 )
                 if any(aff in response for aff in AFFIRMATIVE):
                     logger.info("User CONFIRMED the action.")

@@ -32,9 +32,10 @@ def open_url(url: str) -> str:
 
     if not cleaned.startswith(("http://", "https://")):
         if "." not in cleaned:
-            cleaned = f"https://www.{cleaned}.com"
+            domain_name = re.sub(r"\s+", "", cleaned)
+            cleaned = f"https://www.{domain_name}.com"
         else:
-            cleaned = "https://" + cleaned
+            cleaned = "https://" + urllib.parse.quote(cleaned)
 
     logger.info(f"Opening URL: {cleaned}")
     webbrowser.open(cleaned)

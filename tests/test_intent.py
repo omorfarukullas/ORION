@@ -75,5 +75,25 @@ class TestConfidenceGating(unittest.TestCase):
         self.assertTrue("not confident" in res)
 
 
+class TestIntentParserFixes(unittest.TestCase):
+    """Test suite for the new fixes in command parser and rule engine."""
+
+    def setUp(self):
+        from nlp.command_parser import CommandParser
+        self.parser = CommandParser()
+
+    def test_turn_off_the_computer_resolves_to_shutdown(self):
+        parsed = self.parser.parse("turn off the computer")
+        self.assertEqual(parsed.intent, "SHUTDOWN")
+
+    def test_what_is_the_time_resolves_to_time(self):
+        parsed = self.parser.parse("what is the time")
+        self.assertEqual(parsed.intent, "TIME")
+
+    def test_low_confidence_scikit_fallback_is_unknown(self):
+        parsed = self.parser.parse("xyzabc123789")
+        self.assertEqual(parsed.intent, "UNKNOWN")
+
+
 if __name__ == "__main__":
     unittest.main()

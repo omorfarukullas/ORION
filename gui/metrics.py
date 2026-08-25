@@ -44,6 +44,12 @@ class MetricsBar(ctk.CTkFrame):
         )
         self.bat_label.pack(side="left", expand=True, padx=5, pady=6)
 
+        # Prime baseline measurement for CPU
+        try:
+            psutil.cpu_percent(interval=None)
+        except Exception:
+            pass
+
         self.refresh_metrics()
 
     def refresh_metrics(self) -> None:

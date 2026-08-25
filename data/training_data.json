@@ -3,6 +3,33 @@
   "version": "1.0",
   "intents": [
     {
+      "intent": "SHUTDOWN",
+      "examples": [
+        "shutdown",
+        "shutdown the pc",
+        "shut down the computer",
+        "turn off the pc",
+        "turn off the computer",
+        "power off",
+        "turn off computer",
+        "shut down computer",
+        "switch off the computer",
+        "shut the computer down",
+        "turn off machine"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "RESTART",
+      "examples": [
+        "restart pc",
+        "restart the computer",
+        "reboot system",
+        "reboot pc"
+      ],
+      "entities": []
+    },
+    {
       "intent": "OPEN_APP",
       "examples": [
         "open chrome",
@@ -14,7 +41,11 @@
         "start spotify",
         "open discord",
         "run calculator",
-        "open file explorer"
+        "open file explorer",
+        "can you open notepad",
+        "bring up chrome",
+        "fire up vscode",
+        "launch notepad"
       ],
       "entities": ["app_name"]
     },
@@ -244,7 +275,11 @@
         "current time",
         "tell me the time",
         "what's the time",
-        "time please"
+        "time please",
+        "time?",
+        "clock?",
+        "tell me what time it is",
+        "what is the time"
       ],
       "entities": []
     },
@@ -255,7 +290,10 @@
         "what day is it",
         "tell me the date",
         "what's today",
-        "what's the date today"
+        "what's the date today",
+        "date?",
+        "what is the date",
+        "tell me today's date"
       ],
       "entities": []
     },
@@ -266,7 +304,9 @@
         "capture my screen",
         "screenshot",
         "grab a screenshot",
-        "screen capture"
+        "screen capture",
+        "take screenshot",
+        "capture screen"
       ],
       "entities": []
     }

@@ -61,6 +61,13 @@ def audit_log(intent: str, entity: str, outcome: str) -> None:
             "outcome": outcome,
         }
 
+        # Log rotation: rotate if file exceeds 5MB
+        if audit_file.exists() and audit_file.stat().st_size > 5 * 1024 * 1024:
+            backup_file = log_dir / "audit.jsonl.1"
+            if backup_file.exists():
+                backup_file.unlink()
+            audit_file.rename(backup_file)
+
         with open(audit_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry) + "\n")
         logger.info(f"Audit log recorded: {entry}")

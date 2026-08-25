@@ -172,6 +172,10 @@ def dispatch(
     fallback_entity = getattr(cmd, "entity", None)
     raw_text = getattr(cmd, "raw_text", "")
 
+    if intent == "UNKNOWN":
+        logger.info(f"Command text '{raw_text}' resulted in UNKNOWN intent.")
+        return "Sorry, I did not understand that command."
+
     # Security check: Risk level
     risk = get_risk_level(intent)
     if risk == RiskLevel.FORBIDDEN:

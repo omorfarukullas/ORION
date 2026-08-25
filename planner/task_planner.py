@@ -35,10 +35,16 @@ class TaskPlanner:
         """
         if not text:
             return False
-        # Ensure conjunction is not part of a search query like "cats and dogs"
-        # by checking if splitting produces at least 2 non-empty command-like segments
         segments = self._split_segments(text)
-        return len(segments) > 1
+        if len(segments) <= 1:
+            return False
+
+        # Validate that all segments parse to a recognized intent
+        for seg in segments:
+            parsed = self.parser.parse(seg)
+            if parsed.intent == "UNKNOWN":
+                return False
+        return True
 
     def _split_segments(self, text: str) -> List[str]:
         """Split text on task conjunctions."""
