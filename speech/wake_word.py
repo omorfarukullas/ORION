@@ -151,12 +151,6 @@ class WakeWordDetector:
             logger.info(f"Wake word detected! Remainder command: '{remainder}'")
             return (True, remainder)
 
-        # Check for direct command starter without wake word
-        for starter in self.COMMAND_STARTERS:
-            if clean.startswith(starter) or f" {starter}" in clean:
-                logger.info(f"Direct command recognized during standby: '{text}'")
-                return (True, text)
-
         return (False, "")
 
     def get_detected_command(self) -> str:

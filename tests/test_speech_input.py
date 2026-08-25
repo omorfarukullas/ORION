@@ -144,8 +144,12 @@ class TestWakeWordDetector(unittest.TestCase):
         self.assertEqual(cmd2, "open notepad")
 
         detected3, cmd3 = detector._is_wake_word_present("what time is it")
-        self.assertTrue(detected3)
-        self.assertEqual(cmd3, "what time is it")
+        self.assertFalse(detected3)
+        self.assertEqual(cmd3, "")
+
+        detected3b, cmd3b = detector._is_wake_word_present("Orion what time is it")
+        self.assertTrue(detected3b)
+        self.assertEqual(cmd3b, "what time is it")
 
         detected4, cmd4 = detector._is_wake_word_present("Hello world")
         self.assertFalse(detected4)
