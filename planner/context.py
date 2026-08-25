@@ -35,15 +35,15 @@ class ConversationContext:
         self.last_intent = parsed_cmd.intent
         entities = parsed_cmd.entities or {}
 
-        if "app_name" in entities:
+        if "app_name" in entities and entities["app_name"] not in ("it", "close", "open", "the app", "that"):
             self.last_application = entities["app_name"]
             self.last_entity = entities["app_name"]
 
-        if "query" in entities:
+        if "query" in entities and entities["query"] not in ("it", "that", "this"):
             self.last_search_query = entities["query"]
             self.last_entity = entities["query"]
 
-        if "file_name" in entities:
+        if "file_name" in entities and entities["file_name"] not in ("it", "the file", "that"):
             self.last_file = entities["file_name"]
             self.last_entity = entities["file_name"]
 
@@ -65,10 +65,10 @@ class ConversationContext:
         entities = dict(parsed_cmd.entities or {})
         raw_lower = parsed_cmd.raw_text.lower().strip()
 
-        # Follow-up app resolution: "close it" or "open it"
+        # Follow-up app resolution: "close it", "close", "quit it", "open it"
         if parsed_cmd.intent in ("OPEN_APP", "CLOSE_APP"):
             app_val = entities.get("app_name", "").lower()
-            if (not app_val or app_val in ("it", "the app", "that")) and self.last_application:
+            if (not app_val or app_val in ("it", "the app", "that", "close", "open", "quit", "exit")) and self.last_application:
                 logger.info(f"Resolved app '{app_val}' to previous app '{self.last_application}'")
                 entities["app_name"] = self.last_application
 

@@ -5,6 +5,8 @@ TF-IDF + Logistic Regression intent classifier.
 Trained on data/intents.csv, serialised to models/*.pkl.
 """
 from __future__ import annotations
+import sys
+import os
 from pathlib import Path
 from typing import Tuple
 import joblib
@@ -12,6 +14,11 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+
+# Ensure project root is in sys.path
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from config.settings import Settings
 from nlp.preprocessing import preprocess
@@ -109,3 +116,9 @@ class IntentClassifier:
 
         logger.info(f"Predicted intent '{intent_label}' with confidence {confidence:.2%} for input '{text}'")
         return (intent_label, confidence)
+
+
+if __name__ == "__main__":
+    clf = IntentClassifier()
+    res = clf.train()
+    print(f"[ORION] Classifier trained on {res['num_samples']} samples. Accuracy: {res['accuracy']:.2%}")

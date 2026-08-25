@@ -161,3 +161,41 @@ screenshot,SCREENSHOT
 save screen capture,SCREENSHOT
 take picture of screen,SCREENSHOT
 grab screenshot,SCREENSHOT
+remember that my project folder is on desktop,REMEMBER
+remember that my name is Faruck,REMEMBER
+remember my email is test@example.com,REMEMBER
+remember that password is secret,REMEMBER
+remember this note,REMEMBER
+save to memory that I like dark theme,REMEMBER
+remember my meeting is at five,REMEMBER
+keep in mind that the report is due tomorrow,REMEMBER
+remember that the server port is 8080,REMEMBER
+remember that my car is blue,REMEMBER
+remember that my phone is iphone,REMEMBER
+remember that my birthday is in june,REMEMBER
+remember my username is omor,REMEMBER
+what is my project folder,RECALL
+where is my project folder,RECALL
+recall my email,RECALL
+what is my name,RECALL
+do you remember where my file is,RECALL
+tell me what my meeting time is,RECALL
+what did I tell you about the theme,RECALL
+recall my note,RECALL
+what is the server port,RECALL
+what color is my car,RECALL
+what is my phone,RECALL
+when is my birthday,RECALL
+what is my username,RECALL
+shut down the computer,SHUTDOWN
+turn off the pc,SHUTDOWN
+power off my computer,SHUTDOWN
+shut down system,SHUTDOWN
+initiate shutdown,SHUTDOWN
+turn off machine,SHUTDOWN
+restart the computer,RESTART
+reboot the pc,RESTART
+restart system,RESTART
+reboot machine,RESTART
+initiate restart,RESTART
+restart my computer,RESTART

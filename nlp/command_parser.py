@@ -62,8 +62,6 @@ class CommandParser:
         Returns:
             ParsedCommand instance containing intent, confidence, and extracted entities.
         """
-        cleaned_text = preprocess(raw_text)
-
         intent = "UNKNOWN"
         confidence = 0.0
 
@@ -79,7 +77,8 @@ class CommandParser:
             intent = rule_cmd.intent
             confidence = 1.0 if intent != "UNKNOWN" else 0.0
 
-        entities = self.extractor.extract(cleaned_text if cleaned_text else raw_text, intent)
+        # Pass raw_text to entity_extractor so stop-words/structure are intact
+        entities = self.extractor.extract(raw_text, intent)
 
         # Fallback entity filling if entity_extractor returned empty but rule_engine found an entity
         if not entities:

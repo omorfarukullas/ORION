@@ -5,9 +5,11 @@ Entry point. Bootstraps the system, checks dependencies, initializes
 components, and starts the GUI and voice orchestration loops.
 """
 
+from __future__ import annotations
 import sys
 import os
 import threading
+from typing import Any
 
 # ── Ensure project root is on sys.path regardless of CWD ──────────────────────
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +40,7 @@ def voice_orchestration_loop(
     listener: Any,
     detector: Any,
     command_parser: Any,
+    task_planner: Any,
     confirmation_handler: Any,
     context: Any,
     db: Any,
@@ -68,31 +71,46 @@ def voice_orchestration_loop(
                 transcript = stt.transcribe(audio)
                 logger.info(f"Final Transcript: '{transcript}'")
                 if transcript:
-                    parsed_cmd = command_parser.parse(transcript)
-                    
-                    # Context resolution (Phase 11)
-                    resolved_cmd = context.resolve(parsed_cmd)
-                    
-                    # Command dispatch with safety gating & memory (Phase 9 & 11)
-                    reply = dispatch(resolved_cmd, confirmation_handler=confirmation_handler, db=db)
-
-                    # Update context & persistent database
-                    context.update(resolved_cmd)
-                    db.log_command(
-                        raw_text=transcript,
-                        intent=resolved_cmd.intent,
-                        confidence=resolved_cmd.confidence,
-                        entities=resolved_cmd.entities,
-                        outcome=reply,
-                    )
+                    # Check for multi-step tasks (Phase 12)
+                    if task_planner and task_planner.is_multi_step(transcript):
+                        steps = task_planner.plan(transcript)
+                        reply = task_planner.execute_plan(
+                            steps=steps,
+                            dispatch_fn=dispatch,
+                            confirmation_handler=confirmation_handler,
+                            context=context,
+                            db=db,
+                        )
+                        primary_intent = "MULTI_STEP"
+                        primary_conf = 1.0
+                        entities_summary = {"steps": len(steps)}
+                    else:
+                        parsed_cmd = command_parser.parse(transcript)
+                        resolved_cmd = context.resolve(parsed_cmd)
+                        reply = dispatch(
+                            resolved_cmd,
+                            confirmation_handler=confirmation_handler,
+                            db=db,
+                        )
+                        context.update(resolved_cmd)
+                        db.log_command(
+                            raw_text=transcript,
+                            intent=resolved_cmd.intent,
+                            confidence=resolved_cmd.confidence,
+                            entities=resolved_cmd.entities,
+                            outcome=reply,
+                        )
+                        primary_intent = resolved_cmd.intent
+                        primary_conf = resolved_cmd.confidence
+                        entities_summary = resolved_cmd.entities
 
                     # Update GUI Dashboard (Phase 10)
                     if dashboard:
                         dashboard.update_command(
                             raw_text=transcript,
-                            intent=resolved_cmd.intent,
-                            confidence=resolved_cmd.confidence,
-                            entities=resolved_cmd.entities,
+                            intent=primary_intent,
+                            confidence=primary_conf,
+                            entities=entities_summary,
                             outcome=reply,
                         )
 
@@ -169,14 +187,16 @@ def main() -> None:
         chunk_size=settings.CHUNK_SIZE,
     )
 
-    # ── Phase 5-11: NLP, Security, Context, Memory & Database ───────────────────
+    # ── Phase 5-12: NLP, Planner, Security, Context, Memory & Database ──────────
     from nlp.command_parser import CommandParser
     from nlp.command_dispatcher import dispatch
+    from planner.task_planner import TaskPlanner
     from security.confirmation import ConfirmationHandler
     from planner.context import ConversationContext
     from database.database import Database
 
     command_parser = CommandParser()
+    task_planner = TaskPlanner(command_parser=command_parser)
     confirmation_handler = ConfirmationHandler(tts=tts, listener=listener, stt=stt)
     context = ConversationContext()
     db = Database(settings.DB_PATH)
@@ -201,6 +221,7 @@ def main() -> None:
                 listener,
                 detector,
                 command_parser,
+                task_planner,
                 confirmation_handler,
                 context,
                 db,
@@ -220,6 +241,7 @@ def main() -> None:
             listener,
             detector,
             command_parser,
+            task_planner,
             confirmation_handler,
             context,
             db,
