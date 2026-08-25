@@ -202,7 +202,6 @@ def main() -> None:
 
     # ── Phase 5-12: NLP, Planner, Security, Context, Memory & Database ──────────
     from nlp.command_parser import CommandParser
-    from nlp.command_dispatcher import dispatch
     from planner.task_planner import TaskPlanner
     from security.confirmation import ConfirmationHandler
     from planner.context import ConversationContext
