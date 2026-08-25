@@ -44,6 +44,12 @@ INTENT_RISK: dict[str, RiskLevel] = {
     "SCREENSHOT":     RiskLevel.SAFE,
     "REMEMBER":       RiskLevel.SAFE,
     "RECALL":         RiskLevel.SAFE,
+    "WEATHER":        RiskLevel.SAFE,
+    "CALCULATE":      RiskLevel.SAFE,
+    "CLIPBOARD_READ": RiskLevel.SAFE,
+    "CLIPBOARD_COPY": RiskLevel.SAFE,
+    "CLIPBOARD_CLEAR":RiskLevel.SAFE,
+    "ASK_ORION":      RiskLevel.SAFE,
     # Destructive — require confirmation
     "DELETE_FILE":    RiskLevel.DESTRUCTIVE,
     "SHUTDOWN":       RiskLevel.DESTRUCTIVE,

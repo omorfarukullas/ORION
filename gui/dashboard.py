@@ -15,6 +15,7 @@ from config.settings import Settings
 from gui.status import StatusPanel
 from gui.metrics import MetricsBar
 from gui.history import HistoryPanel
+from gui.settings_panel import SettingsPanel
 
 
 class Dashboard(ctk.CTk):
@@ -30,12 +31,12 @@ class Dashboard(ctk.CTk):
         ctk.set_default_color_theme(Settings.GUI_COLOR_THEME)
 
         self.title(f"{Settings.NAME} — AI Voice Assistant (v{Settings.VERSION})")
-        self.geometry("540x680")
+        self.geometry("560x720")
         self.minsize(480, 560)
 
         # ── Top Bar / Header ───────────────────────────────────────────────
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.header_frame.pack(fill="x", padx=16, pady=(14, 8))
+        self.header_frame.pack(fill="x", padx=16, pady=(14, 4))
 
         self.app_title = ctk.CTkLabel(
             self.header_frame,
@@ -47,9 +48,17 @@ class Dashboard(ctk.CTk):
         self.status_panel = StatusPanel(self.header_frame, fg_color=("gray85", "gray20"), corner_radius=12)
         self.status_panel.pack(side="right")
 
-        # ── Last Command Card ──────────────────────────────────────────────
-        self.cmd_card = ctk.CTkFrame(self, corner_radius=10)
-        self.cmd_card.pack(fill="x", padx=16, pady=8)
+        # ── Main Tab View ──────────────────────────────────────────────────
+        self.tabview = ctk.CTkTabview(self, corner_radius=10)
+        self.tabview.pack(fill="both", expand=True, padx=14, pady=(0, 10))
+
+        self.tab_overview = self.tabview.add("📊 Overview")
+        self.tab_settings = self.tabview.add("⚙ Settings")
+
+        # ── Tab 1: Overview ────────────────────────────────────────────────
+        # Last Command Card
+        self.cmd_card = ctk.CTkFrame(self.tab_overview, corner_radius=10)
+        self.cmd_card.pack(fill="x", padx=6, pady=6)
 
         self.cmd_card_title = ctk.CTkLabel(
             self.cmd_card,
@@ -57,7 +66,7 @@ class Dashboard(ctk.CTk):
             font=ctk.CTkFont(size=11, weight="bold"),
             text_color="gray60",
         )
-        self.cmd_card_title.pack(anchor="w", padx=14, pady=(10, 2))
+        self.cmd_card_title.pack(anchor="w", padx=14, pady=(8, 2))
 
         self.last_text_lbl = ctk.CTkLabel(
             self.cmd_card,
@@ -68,7 +77,7 @@ class Dashboard(ctk.CTk):
         self.last_text_lbl.pack(fill="x", padx=14, pady=2)
 
         self.cmd_meta_frame = ctk.CTkFrame(self.cmd_card, fg_color="transparent")
-        self.cmd_meta_frame.pack(fill="x", padx=14, pady=(4, 10))
+        self.cmd_meta_frame.pack(fill="x", padx=14, pady=(4, 8))
 
         self.intent_lbl = ctk.CTkLabel(
             self.cmd_meta_frame,
@@ -94,13 +103,13 @@ class Dashboard(ctk.CTk):
         )
         self.entities_lbl.pack(side="left")
 
-        # ── System Metrics Bar ─────────────────────────────────────────────
-        self.metrics_bar = MetricsBar(self, fg_color=("gray85", "gray20"), corner_radius=8)
-        self.metrics_bar.pack(fill="x", padx=16, pady=6)
+        # System Metrics Bar
+        self.metrics_bar = MetricsBar(self.tab_overview, fg_color=("gray85", "gray20"), corner_radius=8)
+        self.metrics_bar.pack(fill="x", padx=6, pady=6)
 
-        # ── History Section Header ─────────────────────────────────────────
-        self.hist_header = ctk.CTkFrame(self, fg_color="transparent")
-        self.hist_header.pack(fill="x", padx=16, pady=(10, 4))
+        # History Section Header
+        self.hist_header = ctk.CTkFrame(self.tab_overview, fg_color="transparent")
+        self.hist_header.pack(fill="x", padx=6, pady=(8, 4))
 
         self.hist_title = ctk.CTkLabel(
             self.hist_header,
@@ -121,9 +130,13 @@ class Dashboard(ctk.CTk):
         )
         self.clear_btn.pack(side="right")
 
-        # ── History Scrollable Panel ───────────────────────────────────────
-        self.history_panel = HistoryPanel(self, corner_radius=10)
-        self.history_panel.pack(fill="both", expand=True, padx=16, pady=(0, 14))
+        # History Scrollable Panel
+        self.history_panel = HistoryPanel(self.tab_overview, corner_radius=10)
+        self.history_panel.pack(fill="both", expand=True, padx=6, pady=(0, 6))
+
+        # ── Tab 2: Settings ────────────────────────────────────────────────
+        self.settings_panel = SettingsPanel(self.tab_settings, corner_radius=10)
+        self.settings_panel.pack(fill="both", expand=True, padx=6, pady=6)
 
     def _on_clear_history(self) -> None:
         self.history_panel.clear()

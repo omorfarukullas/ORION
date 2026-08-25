@@ -309,6 +309,75 @@
         "capture screen"
       ],
       "entities": []
+    },
+    {
+      "intent": "WEATHER",
+      "examples": [
+        "what is the weather today",
+        "what's the weather in London",
+        "how hot is it outside",
+        "is it going to rain today",
+        "tell me the weather forecast",
+        "weather in New York",
+        "what is the temperature",
+        "how cold is it in Paris"
+      ],
+      "entities": ["location"]
+    },
+    {
+      "intent": "CALCULATE",
+      "examples": [
+        "what is 25 times 4",
+        "calculate 15 percent of 800",
+        "what is 500 divided by 20",
+        "what is 12 plus 45",
+        "calculate 300 minus 75",
+        "what is the square root of 144",
+        "calculate 2 to the power of 8",
+        "how much is 150 plus 250"
+      ],
+      "entities": ["expression"]
+    },
+    {
+      "intent": "CLIPBOARD_READ",
+      "examples": [
+        "what is in my clipboard",
+        "what's in my clipboard",
+        "read clipboard",
+        "show clipboard contents",
+        "what did I copy"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "CLIPBOARD_COPY",
+      "examples": [
+        "copy that to clipboard",
+        "copy this text to clipboard",
+        "copy to clipboard"
+      ],
+      "entities": ["text"]
+    },
+    {
+      "intent": "CLIPBOARD_CLEAR",
+      "examples": [
+        "clear clipboard",
+        "empty my clipboard",
+        "clear the clipboard"
+      ],
+      "entities": []
+    },
+    {
+      "intent": "ASK_ORION",
+      "examples": [
+        "explain quantum computing to me",
+        "what is the capital of France",
+        "tell me about renewable energy",
+        "how does photosynthesis work",
+        "write a python hello world example",
+        "ask orion what is machine learning"
+      ],
+      "entities": ["question"]
     }
   ]
 }

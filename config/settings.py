@@ -50,6 +50,12 @@ class Settings:
     WAKE_WORD_CHUNK_SECONDS: float = 1.5  # Seconds of audio per detection window
     WAKE_WORD_MODEL: str = "tiny"        # Whisper model size for wake word detection
 
+    # ── Local Ollama LLM ──────────────────────────────────────────────────────
+    OLLAMA_ENABLED: bool = True
+    OLLAMA_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3.2"
+    LLM_MAX_TOKENS: int = 250
+
     # ── Whisper STT ───────────────────────────────────────────────────────────
     # Options: "tiny", "base", "small", "medium", "large"
     # "base" is the recommended starting point (~140 MB, ~3× faster than small)
@@ -75,14 +81,49 @@ class Settings:
     LOG_LEVEL: str = "DEBUG"
     LOG_TO_FILE: bool = True
 
+    USER_SETTINGS_PATH: Path = CONFIG_DIR / "user_settings.json"
+
     def __init__(self) -> None:
-        """Create runtime directories if they don't already exist."""
+        """Create runtime directories if they don't already exist and load user settings overrides."""
         for directory in (
             self.LOGS_DIR,
             self.SCREENSHOTS_DIR,
             self.MODELS_DIR,
         ):
             directory.mkdir(parents=True, exist_ok=True)
+        
+        self.load_user_settings()
+
+    @classmethod
+    def load_user_settings(cls) -> None:
+        """Load user overrides from config/user_settings.json if present."""
+        if cls.USER_SETTINGS_PATH.exists():
+            try:
+                import json
+                with open(cls.USER_SETTINGS_PATH, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                for key, value in data.items():
+                    if hasattr(cls, key):
+                        setattr(cls, key, value)
+            except Exception:
+                pass
+
+    @classmethod
+    def save_user_settings(cls) -> None:
+        """Save current user settings to config/user_settings.json."""
+        import json
+        settings_dict = {
+            "CONFIDENCE_EXECUTE": cls.CONFIDENCE_EXECUTE,
+            "CONFIDENCE_CONFIRM": cls.CONFIDENCE_CONFIRM,
+            "OLLAMA_ENABLED": cls.OLLAMA_ENABLED,
+            "TTS_RATE": cls.TTS_RATE,
+            "GUI_THEME": cls.GUI_THEME,
+        }
+        try:
+            with open(cls.USER_SETTINGS_PATH, "w", encoding="utf-8") as f:
+                json.dump(settings_dict, f, indent=2)
+        except Exception:
+            pass
 
     def __repr__(self) -> str:
         return (

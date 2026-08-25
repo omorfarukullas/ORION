@@ -112,6 +112,36 @@
       "entity":   "__extract__"
     },
     {
+      "intent":   "WEATHER",
+      "keywords": ["weather", "temperature", "how hot is it", "is it raining"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "CALCULATE",
+      "keywords": ["calculate", "what is 2", "what is 3", "what is 4", "what is 5", "what is 6", "what is 7", "what is 8", "what is 9", "math"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "CLIPBOARD_READ",
+      "keywords": ["read clipboard", "what is in my clipboard", "what's in my clipboard", "show clipboard"],
+      "entity":   null
+    },
+    {
+      "intent":   "CLIPBOARD_COPY",
+      "keywords": ["copy to clipboard", "copy this to clipboard"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "CLIPBOARD_CLEAR",
+      "keywords": ["clear clipboard", "empty clipboard"],
+      "entity":   null
+    },
+    {
+      "intent":   "ASK_ORION",
+      "keywords": ["ask orion", "orion explain", "explain to me", "tell me about"],
+      "entity":   "__extract__"
+    },
+    {
       "intent":   "RESTART",
       "keywords": ["restart pc", "restart the pc", "reboot"],
       "entity":   null

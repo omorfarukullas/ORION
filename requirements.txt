@@ -21,6 +21,7 @@ pyautogui>=0.9.54                 # Mouse/keyboard automation + screenshots
 psutil>=5.9.5                     # CPU / RAM / battery / process info
 Pillow>=10.0.0                    # Image handling (screenshots, pyautogui dep)
 pygetwindow>=0.0.9                # Window management (Windows/macOS)
+pyperclip>=1.8.2                  # Clipboard operations
 
 # ─── GUI ───────────────────────────────────────────────────────────────────────
 customtkinter>=5.2.0              # Modern Tkinter GUI

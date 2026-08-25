@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict
 
-from actions import applications, browser, files, media, screenshots, system
+from actions import applications, browser, files, media, screenshots, system, weather, calculator, clipboard, llm
 from config.settings import Settings
 from security.command_validator import get_risk_level, RiskLevel
 from security.permissions import audit_log
@@ -144,6 +144,22 @@ def dispatch_action(
                 return f"You told me that {key} is {val}."
             else:
                 return f"I don't have any memory stored for {key}."
+        case "WEATHER":
+            loc = _get_entity_val(entities, "location", fallback_entity)
+            return weather.get_weather(loc)
+        case "CALCULATE":
+            expr = _get_entity_val(entities, "expression", fallback_entity)
+            return calculator.calculate(expr or fallback_entity or "")
+        case "CLIPBOARD_READ":
+            return clipboard.read_clipboard()
+        case "CLIPBOARD_COPY":
+            txt = _get_entity_val(entities, "text", fallback_entity)
+            return clipboard.copy_to_clipboard(txt)
+        case "CLIPBOARD_CLEAR":
+            return clipboard.clear_clipboard()
+        case "ASK_ORION":
+            q = _get_entity_val(entities, "question", fallback_entity)
+            return llm.ask_llm(q or fallback_entity or "")
         case _:
             logger.info(f"Unhandled intent '{intent}'")
             return "Sorry, I did not understand that command."
