@@ -10,11 +10,23 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 
-def play_pause() -> str:
-    """Toggle play/pause on the active media player."""
+def play_media() -> str:
+    """Start/resume media playback."""
     logger.info("Pressing virtual key 'playpause'")
     pyautogui.press("playpause")
-    return "Toggled media playback."
+    return "Playing media."
+
+
+def pause_media() -> str:
+    """Pause media playback."""
+    logger.info("Pressing virtual key 'playpause'")
+    pyautogui.press("playpause")
+    return "Paused media."
+
+
+def play_pause() -> str:
+    """Toggle play/pause on the active media player."""
+    return play_media()
 
 
 def next_track() -> str:

@@ -16,7 +16,7 @@
 | **Phase 4** | **Wake Word** | Idle/standby wake word loop (`openWakeWord`) | **✅ Complete** |
 | **Phase 5** | **Rule-Based Engine** | Hard-coded command execution | **✅ Complete** |
 | **Phase 6** | **NLP Classifier** | TF-IDF & Logistic Regression intent classifier | **✅ Complete** |
-| **Phase 7** | **Entity Extractor** | Named-entity matching & command parser | 🔲 Pending |
+| **Phase 7** | **Entity Extractor** | Named-entity matching & command parser | **✅ Complete** |
 | **Phase 8** | **PC Automation** | Execution adapters (Browser, Apps, Media, Screenshots, Files, System) | 🔲 Pending |
 | **Phase 9** | **Safety Gating** | Permissions validation, destructiveness warnings, confirmation handlers | 🔲 Pending |
 | **Phase 10** | **User Interface** | GUI dashboard (`CustomTkinter`), history, and status monitor | 🔲 Pending |

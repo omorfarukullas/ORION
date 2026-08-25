@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
+import psutil
 
 from config.settings import Settings
 from utils.logger import get_logger
@@ -74,13 +75,38 @@ def open_application(app_name: str) -> str:
 def close_application(app_name: str) -> str:
     """
     Gracefully terminate the running process matching *app_name*.
-
-    Raises:
-        NotImplementedError: Until Phase 8 is implemented.
     """
-    raise NotImplementedError("close_application is implemented in Phase 8.")
+    if not app_name:
+        return "Which application would you like me to close?"
+
+    target = app_name.lower().strip()
+    terminated_count = 0
+
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            pname = proc.info['name']
+            if pname and target in pname.lower():
+                proc.terminate()
+                terminated_count += 1
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+
+    if terminated_count > 0:
+        logger.info(f"Closed {terminated_count} process(es) matching '{app_name}'.")
+        return f"Closed {app_name.title()}."
+    else:
+        logger.warning(f"No running process found matching '{app_name}'.")
+        return f"Could not find a running application named {app_name}."
 
 
 def list_running_apps() -> list[str]:
     """Return a list of currently running application names via psutil."""
-    raise NotImplementedError("list_running_apps is implemented in Phase 8.")
+    apps = set()
+    for proc in psutil.process_iter(['name']):
+        try:
+            name = proc.info['name']
+            if name:
+                apps.add(name)
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+    return sorted(list(apps))
