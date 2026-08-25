@@ -1,7 +1,7 @@
 """
 tests/test_entities.py
 ======================
-Entity extractor and command parser tests (Phase 7).
+Entity extractor and command parser tests (Phase 7 & 11).
 """
 import pytest
 from nlp.entity_extractor import EntityExtractor
@@ -64,6 +64,15 @@ class TestEntityExtractor:
     def test_delete_file_entity(self, extractor: EntityExtractor) -> None:
         res = extractor.extract("delete file budget.xlsx", "DELETE_FILE")
         assert res.get("file_name") == "budget.xlsx"
+
+    def test_remember_entity(self, extractor: EntityExtractor) -> None:
+        res = extractor.extract("remember that my project folder is on Desktop", "REMEMBER")
+        assert res.get("key") == "my project folder"
+        assert res.get("value") == "on Desktop"
+
+    def test_recall_entity(self, extractor: EntityExtractor) -> None:
+        res = extractor.extract("what is my project folder?", "RECALL")
+        assert res.get("key") == "my project folder"
 
     def test_no_entity_intents(self, extractor: EntityExtractor) -> None:
         res = extractor.extract("take a screenshot", "SCREENSHOT")

@@ -1,7 +1,7 @@
 """
 security/command_validator.py
 ==============================
-Phase 9 — Command Validator
+Phase 9 & 11 — Command Validator
 
 Allow-list gate: classifies an intent into SAFE / DESTRUCTIVE / FORBIDDEN
 before the actions layer executes anything.
@@ -42,6 +42,8 @@ INTENT_RISK: dict[str, RiskLevel] = {
     "TIME":           RiskLevel.SAFE,
     "DATE":           RiskLevel.SAFE,
     "SCREENSHOT":     RiskLevel.SAFE,
+    "REMEMBER":       RiskLevel.SAFE,
+    "RECALL":         RiskLevel.SAFE,
     # Destructive — require confirmation
     "DELETE_FILE":    RiskLevel.DESTRUCTIVE,
     "SHUTDOWN":       RiskLevel.DESTRUCTIVE,

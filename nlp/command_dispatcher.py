@@ -2,7 +2,8 @@
 nlp/command_dispatcher.py
 =========================
 Routes ParsedCommand objects to their corresponding action functions
-and returns spoken confirmation strings. Enforces security gating (Phase 9).
+and returns spoken confirmation strings. Enforces security gating (Phase 9)
+and handles persistent memory (Phase 11).
 """
 from __future__ import annotations
 from datetime import datetime
@@ -13,9 +14,20 @@ from config.settings import Settings
 from security.command_validator import get_risk_level, RiskLevel
 from security.permissions import audit_log
 from security.confirmation import ConfirmationHandler
+from database.database import Database
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+# Default global db instance
+_db: Database | None = None
+
+
+def get_db() -> Database:
+    global _db
+    if _db is None:
+        _db = Database(Settings.DB_PATH)
+    return _db
 
 
 def get_time() -> str:
@@ -41,10 +53,17 @@ def _get_entity_val(entities: Dict[str, Any], key: str, fallback_entity: str | N
     return ""
 
 
-def dispatch_action(intent: str, entities: Dict[str, Any], fallback_entity: str | None = None) -> str:
+def dispatch_action(
+    intent: str,
+    entities: Dict[str, Any],
+    fallback_entity: str | None = None,
+    db: Database | None = None,
+) -> str:
     """
     Execute action corresponding to *intent* and *entities*.
     """
+    database = db or get_db()
+
     match intent:
         case "TIME":
             return get_time()
@@ -109,19 +128,40 @@ def dispatch_action(intent: str, entities: Dict[str, Any], fallback_entity: str 
             return media.volume_down()
         case "MUTE":
             return media.mute()
+        case "REMEMBER":
+            key = _get_entity_val(entities, "key")
+            value = _get_entity_val(entities, "value")
+            if not key or not value:
+                return "What would you like me to remember?"
+            database.save_memory(key, value)
+            return f"I will remember that {key} is {value}."
+        case "RECALL":
+            key = _get_entity_val(entities, "key")
+            if not key:
+                return "What would you like me to recall?"
+            val = database.recall_memory(key)
+            if val:
+                return f"You told me that {key} is {val}."
+            else:
+                return f"I don't have any memory stored for {key}."
         case _:
             logger.info(f"Unhandled intent '{intent}'")
             return "Sorry, I did not understand that command."
 
 
-def dispatch(cmd: Any, confirmation_handler: ConfirmationHandler | None = None) -> str:
+def dispatch(
+    cmd: Any,
+    confirmation_handler: ConfirmationHandler | None = None,
+    db: Database | None = None,
+) -> str:
     """
     Route *cmd* (ParsedCommand object) to the correct execution function with confidence
-    gating and security validation (Phase 9).
+    gating, security validation (Phase 9), and persistent memory (Phase 11).
 
     Args:
         cmd: ParsedCommand object containing intent, confidence, and entities.
         confirmation_handler: Optional ConfirmationHandler instance for destructive actions.
+        db: Optional Database instance.
 
     Returns:
         Spoken response string.
@@ -158,14 +198,14 @@ def dispatch(cmd: Any, confirmation_handler: ConfirmationHandler | None = None) 
     logger.info(f"Gating dispatch for intent '{intent}' at confidence {confidence:.2%}")
 
     if confidence >= Settings.CONFIDENCE_EXECUTE:
-        res = dispatch_action(intent, entities, fallback_entity)
+        res = dispatch_action(intent, entities, fallback_entity, db=db)
         audit_log(intent, str(entities), "EXECUTED_SUCCESS")
         return res
     elif confidence >= Settings.CONFIDENCE_CONFIRM:
         logger.warning(
             f"Medium confidence ({confidence:.2%}) for intent '{intent}'. Executing with user notice."
         )
-        res = dispatch_action(intent, entities, fallback_entity)
+        res = dispatch_action(intent, entities, fallback_entity, db=db)
         audit_log(intent, str(entities), "EXECUTED_MEDIUM_CONFIDENCE")
         return f"I think you meant {intent.replace('_', ' ').lower()}. {res}"
     else:
@@ -180,6 +220,7 @@ def dispatch_with_confidence(
     entity: str | None,
     raw_text: str,
     confirmation_handler: ConfirmationHandler | None = None,
+    db: Database | None = None,
 ) -> str:
     """
     Legacy wrapper for dispatch with raw parameters.
@@ -193,4 +234,4 @@ def dispatch_with_confidence(
     d.entity = entity
     d.entities = {}
     d.raw_text = raw_text
-    return dispatch(d, confirmation_handler=confirmation_handler)
+    return dispatch(d, confirmation_handler=confirmation_handler, db=db)

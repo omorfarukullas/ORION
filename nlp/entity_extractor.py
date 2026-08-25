@@ -1,7 +1,7 @@
 """
 nlp/entity_extractor.py
 =======================
-Phase 7 — Entity Extraction
+Phase 7 & 11 — Entity Extraction
 
 Rule-based entity extraction. Pulls app names, URLs, file names, search
 queries, and other slot values out of a command string using regex and keyword rules.
@@ -88,5 +88,25 @@ class EntityExtractor:
             match = re.sub(r"^(delete|remove|erase|trash)\s+(the\s+)?(file|folder|directory\s+)?", "", text, flags=re.IGNORECASE).strip()
             if match:
                 entities["file_name"] = match
+
+        elif intent == "REMEMBER":
+            # "remember that my project folder is on Desktop"
+            match = re.search(r"remember\s+(?:that\s+)?(.+?)\s+(?:is|=|as)\s+(.+)$", text, flags=re.IGNORECASE)
+            if match:
+                entities["key"] = match.group(1).strip()
+                entities["value"] = match.group(2).strip()
+            else:
+                raw_mem = re.sub(r"^remember\s+(that\s+|this\s+)?", "", text, flags=re.IGNORECASE).strip()
+                if raw_mem:
+                    entities["key"] = raw_mem
+                    entities["value"] = raw_mem
+
+        elif intent == "RECALL":
+            # "what is my project folder" / "where is my project folder" / "recall my project folder"
+            match = re.sub(r"^(what\s+is\s+|where\s+is\s+|recall\s+|do\s+you\s+remember\s+|tell\s+me\s+about\s+)(the\s+)?", "", text, flags=re.IGNORECASE).strip()
+            # strip trailing question mark
+            match = match.rstrip("?").strip()
+            if match:
+                entities["key"] = match
 
         return entities

@@ -19,8 +19,8 @@
 | **Phase 7** | **Entity Extractor** | Named-entity matching & command parser | **✅ Complete** |
 | **Phase 8** | **PC Automation** | Execution adapters (Browser, Apps, Media, Screenshots, Files, System) | **✅ Complete** |
 | **Phase 9** | **Safety Gating** | Permissions validation, destructiveness warnings, confirmation handlers | **✅ Complete** |
-| **Phase 10** | **User Interface** | GUI dashboard (`CustomTkinter`), history, and status monitor | 🔲 Pending |
-| **Phase 11** | **Memory System** | Conversational context and persistent database (`SQLite`) | 🔲 Pending |
+| **Phase 10** | **User Interface** | GUI dashboard (`CustomTkinter`), history, and status monitor | **✅ Complete** |
+| **Phase 11** | **Memory System** | Conversational context and persistent database (`SQLite`) | **✅ Complete** |
 | **Phase 12** | **Polish & Demo** | Comprehensive test passes, multi-step actions validation | 🔲 Pending |
 
 ---

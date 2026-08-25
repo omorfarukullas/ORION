@@ -22,6 +22,21 @@
       "entity":   "__extract__"
     },
     {
+      "intent":   "CLOSE_APP",
+      "keywords": ["close", "quit", "kill", "exit"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "REMEMBER",
+      "keywords": ["remember that", "remember this", "remember"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "RECALL",
+      "keywords": ["what is my", "where is my", "recall", "do you remember", "what is the"],
+      "entity":   "__extract__"
+    },
+    {
       "intent":   "WEB_SEARCH",
       "keywords": ["search google for", "google", "search for"],
       "entity":   "__extract__"

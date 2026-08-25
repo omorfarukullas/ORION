@@ -1,12 +1,13 @@
 """
 ORION — Operational Responsive Intelligent Orchestration Network
 ================================================================
-Entry point. Bootstraps the system, checks dependencies, and
-starts the main orchestration loop.
+Entry point. Bootstraps the system, checks dependencies, initializes
+components, and starts the GUI and voice orchestration loops.
 """
 
 import sys
 import os
+import threading
 
 # ── Ensure project root is on sys.path regardless of CWD ──────────────────────
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -30,8 +31,93 @@ def check_python_version() -> None:
         sys.exit(1)
 
 
+def voice_orchestration_loop(
+    settings: Settings,
+    tts: Any,
+    stt: Any,
+    listener: Any,
+    detector: Any,
+    command_parser: Any,
+    confirmation_handler: Any,
+    context: Any,
+    db: Any,
+    dashboard: Any = None,
+) -> None:
+    """
+    Main voice interaction standby loop.
+    """
+    logger.info("ORION ready. Entering continuous standby loop. Press Ctrl+C to exit.")
+
+    try:
+        while True:
+            if dashboard:
+                dashboard.update_status("IDLE")
+            logger.info(f"Standby — listening for wake word '{settings.WAKE_WORD}'...")
+            detector.start()
+
+            if dashboard:
+                dashboard.update_status("LISTENING")
+            logger.info("Wake word triggered! Prompting user and recording command...")
+            tts.speak("Yes?")
+
+            audio = listener.record()
+
+            if len(audio) > 0:
+                if dashboard:
+                    dashboard.update_status("PROCESSING")
+                transcript = stt.transcribe(audio)
+                logger.info(f"Final Transcript: '{transcript}'")
+                if transcript:
+                    parsed_cmd = command_parser.parse(transcript)
+                    
+                    # Context resolution (Phase 11)
+                    resolved_cmd = context.resolve(parsed_cmd)
+                    
+                    # Command dispatch with safety gating & memory (Phase 9 & 11)
+                    reply = dispatch(resolved_cmd, confirmation_handler=confirmation_handler, db=db)
+
+                    # Update context & persistent database
+                    context.update(resolved_cmd)
+                    db.log_command(
+                        raw_text=transcript,
+                        intent=resolved_cmd.intent,
+                        confidence=resolved_cmd.confidence,
+                        entities=resolved_cmd.entities,
+                        outcome=reply,
+                    )
+
+                    # Update GUI Dashboard (Phase 10)
+                    if dashboard:
+                        dashboard.update_command(
+                            raw_text=transcript,
+                            intent=resolved_cmd.intent,
+                            confidence=resolved_cmd.confidence,
+                            entities=resolved_cmd.entities,
+                            outcome=reply,
+                        )
+
+                    logger.info(f"Command execution reply: '{reply}'")
+                    if dashboard:
+                        dashboard.update_status("SPEAKING")
+                    tts.speak(reply)
+                else:
+                    if dashboard:
+                        dashboard.update_status("SPEAKING")
+                    tts.speak("I did not hear any speech.")
+            else:
+                logger.warning("No audio recorded.")
+
+            if dashboard:
+                dashboard.update_status("IDLE")
+
+    except KeyboardInterrupt:
+        logger.info("KeyboardInterrupt received. Shutting down ORION...")
+        detector.stop()
+        tts.speak("Goodbye.")
+
+
 def main() -> None:
-    """Bootstrap ORION and hand off to the orchestration loop."""
+    """Bootstrap ORION and start GUI and orchestration loop."""
     check_python_version()
 
     settings = Settings()
@@ -83,44 +169,62 @@ def main() -> None:
         chunk_size=settings.CHUNK_SIZE,
     )
 
-    # ── Phase 5, 6, 7, 8 & 9: NLP Command Parser, Security & Dispatcher ─────────
+    # ── Phase 5-11: NLP, Security, Context, Memory & Database ───────────────────
     from nlp.command_parser import CommandParser
     from nlp.command_dispatcher import dispatch
     from security.confirmation import ConfirmationHandler
+    from planner.context import ConversationContext
+    from database.database import Database
 
     command_parser = CommandParser()
     confirmation_handler = ConfirmationHandler(tts=tts, listener=listener, stt=stt)
+    context = ConversationContext()
+    db = Database(settings.DB_PATH)
 
-    logger.info("ORION ready. Entering continuous standby loop. Press Ctrl+C to exit.")
-
+    # ── Phase 10: GUI Dashboard ─────────────────────────────────────────────────
+    dashboard = None
     try:
-        while True:
-            logger.info(f"Standby — listening for wake word '{settings.WAKE_WORD}'...")
-            detector.start()
+        from gui.dashboard import launch_dashboard
+        dashboard = launch_dashboard()
+        logger.info("GUI Dashboard initialized.")
+    except Exception as e:
+        logger.warning(f"Could not initialize GUI Dashboard ({e}). Running in headless console mode.")
 
-            logger.info("Wake word triggered! Prompting user and recording command...")
-            tts.speak("Yes?")
-
-            audio = listener.record()
-
-            if len(audio) > 0:
-                transcript = stt.transcribe(audio)
-                logger.info(f"Final Transcript: '{transcript}'")
-                if transcript:
-                    parsed_cmd = command_parser.parse(transcript)
-                    reply = dispatch(parsed_cmd, confirmation_handler=confirmation_handler)
-
-                    logger.info(f"Command execution reply: '{reply}'")
-                    tts.speak(reply)
-                else:
-                    tts.speak("I did not hear any speech.")
-            else:
-                logger.warning("No audio recorded.")
-
-    except KeyboardInterrupt:
-        logger.info("KeyboardInterrupt received. Shutting down ORION...")
-        detector.stop()
-        tts.speak("Goodbye.")
+    # Start voice orchestration in a background daemon thread if GUI is active
+    if dashboard is not None:
+        backend_thread = threading.Thread(
+            target=voice_orchestration_loop,
+            args=(
+                settings,
+                tts,
+                stt,
+                listener,
+                detector,
+                command_parser,
+                confirmation_handler,
+                context,
+                db,
+                dashboard,
+            ),
+            daemon=True,
+        )
+        backend_thread.start()
+        # Main thread runs CustomTkinter GUI loop
+        dashboard.run()
+    else:
+        # Run directly on main thread if headless
+        voice_orchestration_loop(
+            settings,
+            tts,
+            stt,
+            listener,
+            detector,
+            command_parser,
+            confirmation_handler,
+            context,
+            db,
+            None,
+        )
 
 
 if __name__ == "__main__":
