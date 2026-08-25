@@ -19,6 +19,7 @@ if ROOT not in sys.path:
 # ── Internal imports ───────────────────────────────────────────────────────────
 from config.settings import Settings
 from utils.logger import get_logger
+from nlp.command_dispatcher import dispatch
 
 logger = get_logger(__name__)
 
