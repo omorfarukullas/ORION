@@ -7,6 +7,7 @@ and Windows Registry / PATH lookups.
 from __future__ import annotations
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -71,19 +72,28 @@ def open_application(app_name: str) -> str:
         return "Which application would you like me to open?"
 
     key = app_name.lower().strip()
+    # Strip common redundant suffixes
+    clean_key = re.sub(r"\s+(browser|tab|app|application)$", "", key).strip()
+
     mapping = _load_app_mapping()
 
-    target_path = mapping.get(key)
+    target_path = mapping.get(key) or mapping.get(clean_key)
+
+    if target_path and target_path.startswith(("http://", "https://")):
+        import webbrowser
+        logger.info(f"Opening web target for '{app_name}' -> '{target_path}'")
+        webbrowser.open(target_path)
+        return f"Opening {app_name.title()}."
 
     if not target_path:
         # Fallback 1: Direct app name check via system PATH
-        executable = shutil.which(key)
+        executable = shutil.which(key) or shutil.which(clean_key)
         if executable:
             target_path = executable
 
     if not target_path:
         # Fallback 2: Check Windows Registry App Paths
-        registry_path = _find_in_registry(key)
+        registry_path = _find_in_registry(key) or _find_in_registry(clean_key)
         if registry_path:
             target_path = registry_path
 

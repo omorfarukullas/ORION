@@ -41,7 +41,7 @@ class Settings:
     RECORD_SECONDS: int = 5            # Max recording length after wake word
 
     # ── VAD (Voice Activity Detection) ────────────────────────────────────────────
-    VAD_SILENCE_THRESHOLD: float = 0.01   # RMS amplitude below which = silence
+    VAD_SILENCE_THRESHOLD: float = 0.005  # RMS amplitude below which = silence
     VAD_SILENCE_DURATION: float = 1.5     # Seconds of silence to trigger stop
 
     # ── Wake word ──────────────────────────────────────────────────────────────

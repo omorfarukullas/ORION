@@ -46,7 +46,12 @@ class ConfirmationHandler:
             if len(audio) > 0:
                 response = self.stt.transcribe(audio).lower().strip()
                 logger.info(f"User confirmation response: '{response}'")
-                if "yes" in response or "yeah" in response or "confirm" in response or "do it" in response:
+                AFFIRMATIVE = (
+                    "yes", "yeah", "yep", "sure", "ok", "okay", "confirm", 
+                    "do it", "continue", "proceed", "go ahead", "shut down", 
+                    "turn off", "restart", "delete", "yes please", "correct"
+                )
+                if any(aff in response for aff in AFFIRMATIVE):
                     logger.info("User CONFIRMED the action.")
                     return True
             logger.info("User did NOT confirm the action.")

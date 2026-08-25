@@ -75,6 +75,21 @@
       "intent":   "MUTE",
       "keywords": ["mute", "silence", "quiet"],
       "entity":   null
+    },
+    {
+      "intent":   "OPEN_WEBSITE",
+      "keywords": ["open website", "visit", "go to", "navigate to", "open tab", "open youtube", "open google"],
+      "entity":   "__extract__"
+    },
+    {
+      "intent":   "SHUTDOWN",
+      "keywords": ["shutdown", "shut down", "turn off the pc", "turn off pc", "power off"],
+      "entity":   null
+    },
+    {
+      "intent":   "RESTART",
+      "keywords": ["restart pc", "restart the pc", "reboot"],
+      "entity":   null
     }
   ]
 }

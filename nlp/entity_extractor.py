@@ -36,11 +36,15 @@ class EntityExtractor:
         if intent in ("OPEN_APP", "CLOSE_APP"):
             app_match = re.sub(r"^(open|launch|start|run|close|quit|kill|exit|stop)\s+", "", text, flags=re.IGNORECASE).strip()
             if app_match:
+                # Strip trailing 'app', 'application', 'browser', 'tab'
+                app_match = re.sub(r"\s+(app|application|browser|tab)$", "", app_match, flags=re.IGNORECASE).strip()
                 entities["app_name"] = app_match
 
         elif intent == "OPEN_WEBSITE":
-            match = re.sub(r"^(open|go to|navigate to|visit|launch)\s+", "", text, flags=re.IGNORECASE).strip()
+            match = re.sub(r"^(open\s+website\s+|open\s+tab\s+|open\s+|go\s+to\s+|navigate\s+to\s+|visit\s+|launch\s+)", "", text, flags=re.IGNORECASE).strip()
             if match:
+                # Strip trailing 'website', 'tab', 'page', 'site'
+                match = re.sub(r"\s+(website|tab|page|site)$", "", match, flags=re.IGNORECASE).strip()
                 entities["url"] = match
 
         elif intent == "WEB_SEARCH":
