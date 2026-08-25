@@ -135,11 +135,25 @@ class TestWakeWordDetector(unittest.TestCase):
         from speech.wake_word import WakeWordDetector
 
         detector = WakeWordDetector(wake_word="orion")
-        self.assertTrue(detector._is_wake_word_present("Hey Orion"))
-        self.assertTrue(detector._is_wake_word_present("Orion what time is it"))
-        self.assertTrue(detector._is_wake_word_present("orion"))
-        self.assertFalse(detector._is_wake_word_present("Hello Jarvis"))
-        self.assertFalse(detector._is_wake_word_present(""))
+        detected1, cmd1 = detector._is_wake_word_present("Hey Orion")
+        self.assertTrue(detected1)
+        self.assertEqual(cmd1, "")
+
+        detected2, cmd2 = detector._is_wake_word_present("Orion open notepad")
+        self.assertTrue(detected2)
+        self.assertEqual(cmd2, "open notepad")
+
+        detected3, cmd3 = detector._is_wake_word_present("what time is it")
+        self.assertTrue(detected3)
+        self.assertEqual(cmd3, "what time is it")
+
+        detected4, cmd4 = detector._is_wake_word_present("Hello world")
+        self.assertFalse(detected4)
+        self.assertEqual(cmd4, "")
+
+        detected5, cmd5 = detector._is_wake_word_present("")
+        self.assertFalse(detected5)
+        self.assertEqual(cmd5, "")
 
     @patch("speech.wake_word.sd.InputStream")
     def test_wake_word_detection_triggers_callback(self, mock_input_stream):

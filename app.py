@@ -58,72 +58,84 @@ def voice_orchestration_loop(
             logger.info(f"Standby — listening for wake word '{settings.WAKE_WORD}'...")
             detector.start()
 
-            if dashboard:
-                dashboard.update_status("LISTENING")
-            logger.info("Wake word triggered! Prompting user and recording command...")
-            tts.speak("Yes?")
+            pre_command = detector.get_detected_command() if hasattr(detector, "get_detected_command") else ""
 
-            audio = listener.record()
+            if pre_command:
+                # Single-breath or direct command detected during standby
+                logger.info(f"Direct command captured during wake detection: '{pre_command}'")
+                transcript = pre_command
+            else:
+                # Two-step flow: Wake word detected -> Prompt user -> Record command
+                if dashboard:
+                    dashboard.update_status("LISTENING")
+                logger.info("Wake word triggered! Prompting user and recording command...")
+                tts.speak("Yes?")
 
-            if len(audio) > 0:
+                audio = listener.record()
+                if len(audio) > 0:
+                    if dashboard:
+                        dashboard.update_status("PROCESSING")
+                    transcript = stt.transcribe(audio)
+                else:
+                    transcript = ""
+
+            logger.info(f"Final Transcript: '{transcript}'")
+            if transcript:
                 if dashboard:
                     dashboard.update_status("PROCESSING")
-                transcript = stt.transcribe(audio)
-                logger.info(f"Final Transcript: '{transcript}'")
-                if transcript:
-                    # Check for multi-step tasks (Phase 12)
-                    if task_planner and task_planner.is_multi_step(transcript):
-                        steps = task_planner.plan(transcript)
-                        reply = task_planner.execute_plan(
-                            steps=steps,
-                            dispatch_fn=dispatch,
-                            confirmation_handler=confirmation_handler,
-                            context=context,
-                            db=db,
-                        )
-                        primary_intent = "MULTI_STEP"
-                        primary_conf = 1.0
-                        entities_summary = {"steps": len(steps)}
-                    else:
-                        parsed_cmd = command_parser.parse(transcript)
-                        resolved_cmd = context.resolve(parsed_cmd)
-                        reply = dispatch(
-                            resolved_cmd,
-                            confirmation_handler=confirmation_handler,
-                            db=db,
-                        )
-                        context.update(resolved_cmd)
-                        db.log_command(
-                            raw_text=transcript,
-                            intent=resolved_cmd.intent,
-                            confidence=resolved_cmd.confidence,
-                            entities=resolved_cmd.entities,
-                            outcome=reply,
-                        )
-                        primary_intent = resolved_cmd.intent
-                        primary_conf = resolved_cmd.confidence
-                        entities_summary = resolved_cmd.entities
 
-                    # Update GUI Dashboard (Phase 10)
-                    if dashboard:
-                        dashboard.update_command(
-                            raw_text=transcript,
-                            intent=primary_intent,
-                            confidence=primary_conf,
-                            entities=entities_summary,
-                            outcome=reply,
-                        )
-
-                    logger.info(f"Command execution reply: '{reply}'")
-                    if dashboard:
-                        dashboard.update_status("SPEAKING")
-                    tts.speak(reply)
+                # Check for multi-step tasks (Phase 12)
+                if task_planner and task_planner.is_multi_step(transcript):
+                    steps = task_planner.plan(transcript)
+                    reply = task_planner.execute_plan(
+                        steps=steps,
+                        dispatch_fn=dispatch,
+                        confirmation_handler=confirmation_handler,
+                        context=context,
+                        db=db,
+                    )
+                    primary_intent = "MULTI_STEP"
+                    primary_conf = 1.0
+                    entities_summary = {"steps": len(steps)}
                 else:
-                    if dashboard:
-                        dashboard.update_status("SPEAKING")
-                    tts.speak("I did not hear any speech.")
+                    parsed_cmd = command_parser.parse(transcript)
+                    resolved_cmd = context.resolve(parsed_cmd)
+                    reply = dispatch(
+                        resolved_cmd,
+                        confirmation_handler=confirmation_handler,
+                        db=db,
+                    )
+                    context.update(resolved_cmd)
+                    db.log_command(
+                        raw_text=transcript,
+                        intent=resolved_cmd.intent,
+                        confidence=resolved_cmd.confidence,
+                        entities=resolved_cmd.entities,
+                        outcome=reply,
+                    )
+                    primary_intent = resolved_cmd.intent
+                    primary_conf = resolved_cmd.confidence
+                    entities_summary = resolved_cmd.entities
+
+                # Update GUI Dashboard (Phase 10)
+                if dashboard:
+                    dashboard.update_command(
+                        raw_text=transcript,
+                        intent=primary_intent,
+                        confidence=primary_conf,
+                        entities=entities_summary,
+                        outcome=reply,
+                    )
+
+                logger.info(f"Command execution reply: '{reply}'")
+                if dashboard:
+                    dashboard.update_status("SPEAKING")
+                tts.speak(reply)
             else:
-                logger.warning("No audio recorded.")
+                logger.warning("No command speech recognized.")
+                if dashboard:
+                    dashboard.update_status("SPEAKING")
+                tts.speak("I did not hear any speech.")
 
             if dashboard:
                 dashboard.update_status("IDLE")
