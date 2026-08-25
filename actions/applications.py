@@ -1,13 +1,15 @@
 """
 actions/applications.py
 =======================
-Open desktop applications using allow-listed paths from config/applications.json.
+Open desktop applications using allow-listed paths from config/applications.json
+and Windows Registry / PATH lookups.
 """
 from __future__ import annotations
 import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 import psutil
 
@@ -34,12 +36,33 @@ def _load_app_mapping() -> dict[str, str]:
         return {}
 
 
+def _find_in_registry(app_name: str) -> str | None:
+    """Check Windows App Paths registry key for application executable."""
+    if sys.platform != "win32":
+        return None
+
+    try:
+        import winreg
+        key_path = rf"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\{app_name}.exe"
+        for hkey in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+            try:
+                with winreg.OpenKey(hkey, key_path) as key:
+                    val, _ = winreg.QueryValueEx(key, "")
+                    if val and os.path.exists(val):
+                        return val
+            except FileNotFoundError:
+                continue
+    except Exception as e:
+        logger.debug(f"Registry lookup error for {app_name}: {e}")
+    return None
+
+
 def open_application(app_name: str) -> str:
     """
-    Launch the application matching *app_name* from applications.json or system PATH.
+    Launch the application matching *app_name* from applications.json, registry, or system PATH.
 
     Args:
-        app_name: Normalised app name, e.g. "chrome", "vscode".
+        app_name: Normalised app name, e.g. "chrome", "vscode", "notepad".
 
     Returns:
         Spoken confirmation string, e.g. "Opening Chrome."
@@ -51,14 +74,22 @@ def open_application(app_name: str) -> str:
     mapping = _load_app_mapping()
 
     target_path = mapping.get(key)
+
     if not target_path:
-        # Fallback to direct app name check via system PATH
+        # Fallback 1: Direct app name check via system PATH
         executable = shutil.which(key)
         if executable:
             target_path = executable
-        else:
-            logger.warning(f"Application '{app_name}' not found in applications.json or PATH.")
-            return f"Sorry, I could not find the application '{app_name}'."
+
+    if not target_path:
+        # Fallback 2: Check Windows Registry App Paths
+        registry_path = _find_in_registry(key)
+        if registry_path:
+            target_path = registry_path
+
+    if not target_path:
+        logger.warning(f"Application '{app_name}' not found in applications.json, PATH, or Registry.")
+        return f"Sorry, I could not find the application '{app_name}'."
 
     expanded_path = os.path.expandvars(target_path)
     logger.info(f"Opening application '{app_name}' -> '{expanded_path}'")

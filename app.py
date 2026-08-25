@@ -83,11 +83,13 @@ def main() -> None:
         chunk_size=settings.CHUNK_SIZE,
     )
 
-    # ── Phase 5, 6 & 7: NLP Command Parser & Dispatcher ─────────────────────────
+    # ── Phase 5, 6, 7, 8 & 9: NLP Command Parser, Security & Dispatcher ─────────
     from nlp.command_parser import CommandParser
     from nlp.command_dispatcher import dispatch
+    from security.confirmation import ConfirmationHandler
 
     command_parser = CommandParser()
+    confirmation_handler = ConfirmationHandler(tts=tts, listener=listener, stt=stt)
 
     logger.info("ORION ready. Entering continuous standby loop. Press Ctrl+C to exit.")
 
@@ -106,7 +108,7 @@ def main() -> None:
                 logger.info(f"Final Transcript: '{transcript}'")
                 if transcript:
                     parsed_cmd = command_parser.parse(transcript)
-                    reply = dispatch(parsed_cmd)
+                    reply = dispatch(parsed_cmd, confirmation_handler=confirmation_handler)
 
                     logger.info(f"Command execution reply: '{reply}'")
                     tts.speak(reply)

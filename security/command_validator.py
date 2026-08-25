@@ -1,7 +1,7 @@
 """
 security/command_validator.py
 ==============================
-STUB — Phase 9
+Phase 9 — Command Validator
 
 Allow-list gate: classifies an intent into SAFE / DESTRUCTIVE / FORBIDDEN
 before the actions layer executes anything.
@@ -16,7 +16,7 @@ class RiskLevel(Enum):
     FORBIDDEN   = auto()   # Do not implement — refuse politely
 
 
-# Intent risk classification table (Phase 9 will populate fully)
+# Intent risk classification table
 INTENT_RISK: dict[str, RiskLevel] = {
     # Safe
     "OPEN_APP":       RiskLevel.SAFE,
@@ -51,18 +51,16 @@ INTENT_RISK: dict[str, RiskLevel] = {
 
 def get_risk_level(intent: str) -> RiskLevel:
     """
-    Return the risk level for *intent*.
-
-    Unknown intents default to FORBIDDEN.
+    Return the risk level for *intent*. Unknown intents default to FORBIDDEN.
     """
     return INTENT_RISK.get(intent, RiskLevel.FORBIDDEN)
 
 
 def is_safe(intent: str) -> bool:
     """Return True if intent can execute immediately."""
-    raise NotImplementedError("is_safe is fully wired in Phase 9.")
+    return get_risk_level(intent) == RiskLevel.SAFE
 
 
 def is_destructive(intent: str) -> bool:
     """Return True if intent requires spoken confirmation."""
-    raise NotImplementedError("is_destructive is fully wired in Phase 9.")
+    return get_risk_level(intent) == RiskLevel.DESTRUCTIVE

@@ -4,20 +4,81 @@ tests/test_actions.py
 Action function unit tests using mocks.
 """
 from unittest.mock import MagicMock, patch
-from actions import applications, browser, media, screenshots, system
+from pathlib import Path
+from actions import applications, browser, files, media, screenshots, system
 
 
 class TestApplicationActions:
     @patch("actions.applications.subprocess.Popen")
     def test_open_application_success(self, mock_popen):
         res = applications.open_application("chrome")
-        self_assert_in = "Opening" in res
-        assert self_assert_in
+        assert "Opening" in res
         mock_popen.assert_called_once()
 
     def test_open_application_not_found(self):
         res = applications.open_application("nonexistent_app_12345")
         assert "could not find" in res.lower()
+
+    @patch("actions.applications.psutil.process_iter")
+    def test_close_application(self, mock_process_iter):
+        mock_proc = MagicMock()
+        mock_proc.info = {"pid": 1234, "name": "chrome.exe"}
+        mock_process_iter.return_value = [mock_proc]
+
+        res = applications.close_application("chrome")
+        assert "Closed Chrome" in res
+        mock_proc.terminate.assert_called_once()
+
+    @patch("actions.applications.psutil.process_iter")
+    def test_list_running_apps(self, mock_process_iter):
+        mock_proc1 = MagicMock()
+        mock_proc1.info = {"name": "chrome.exe"}
+        mock_proc2 = MagicMock()
+        mock_proc2.info = {"name": "python.exe"}
+        mock_process_iter.return_value = [mock_proc1, mock_proc2]
+
+        apps = applications.list_running_apps()
+        assert "chrome.exe" in apps
+        assert "python.exe" in apps
+
+
+class TestFileActions:
+    def test_create_folder(self, tmp_path: Path):
+        res = files.create_folder("test_dir", parent=tmp_path)
+        assert "Created folder test_dir" in res
+        assert (tmp_path / "test_dir").is_dir()
+
+    def test_create_file(self, tmp_path: Path):
+        res = files.create_file("test_file.txt", parent=tmp_path)
+        assert "Created file test_file.txt" in res
+        assert (tmp_path / "test_file.txt").is_file()
+
+    def test_find_file(self, tmp_path: Path):
+        test_file = tmp_path / "sample.txt"
+        test_file.touch()
+
+        res = files.find_file("sample.txt", search_root=tmp_path)
+        assert "Found sample.txt" in res
+
+        res_not_found = files.find_file("missing.txt", search_root=tmp_path)
+        assert "Could not find" in res_not_found
+
+    def test_rename_file(self, tmp_path: Path):
+        old_file = tmp_path / "old.txt"
+        old_file.touch()
+
+        res = files.rename_file("old.txt", "new.txt", parent=tmp_path)
+        assert "Renamed old.txt to new.txt" in res
+        assert (tmp_path / "new.txt").exists()
+        assert not (tmp_path / "old.txt").exists()
+
+    def test_delete_file(self, tmp_path: Path):
+        to_delete = tmp_path / "delete_me.txt"
+        to_delete.touch()
+
+        res = files.delete_file("delete_me.txt", parent=tmp_path)
+        assert "Deleted delete_me.txt" in res
+        assert not to_delete.exists()
 
 
 class TestBrowserActions:
@@ -79,6 +140,18 @@ class TestSystemActions:
 
         res = system.get_battery_status()
         assert "85 percent, charging" in res
+
+    @patch("actions.system.subprocess.run")
+    def test_shutdown(self, mock_run):
+        res = system.shutdown()
+        assert "shutdown in 5 seconds" in res
+        mock_run.assert_called_once_with(["shutdown", "/s", "/t", "5"], check=True)
+
+    @patch("actions.system.subprocess.run")
+    def test_restart(self, mock_run):
+        res = system.restart()
+        assert "restart in 5 seconds" in res
+        mock_run.assert_called_once_with(["shutdown", "/r", "/t", "5"], check=True)
 
 
 class TestMediaActions:

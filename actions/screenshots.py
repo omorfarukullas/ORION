@@ -32,8 +32,19 @@ def take_screenshot(save_dir: Path | None = None) -> str:
     filepath = target_dir / filename
 
     logger.info(f"Taking screenshot... saving to {filepath}")
-    screenshot = pyautogui.screenshot()
-    screenshot.save(filepath)
+    try:
+        screenshot = pyautogui.screenshot()
+        screenshot.save(filepath)
 
-    logger.info(f"Screenshot saved successfully at {filepath}")
-    return f"Screenshot saved as {filename}."
+        # Try to copy path to clipboard if pyperclip is available
+        try:
+            import pyperclip
+            pyperclip.copy(str(filepath.resolve()))
+        except Exception:
+            pass
+
+        logger.info(f"Screenshot saved successfully at {filepath}")
+        return f"Screenshot saved as {filename}."
+    except Exception as e:
+        logger.error(f"Failed to capture screenshot: {e}")
+        return "Failed to take screenshot."

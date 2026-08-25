@@ -17,8 +17,8 @@
 | **Phase 5** | **Rule-Based Engine** | Hard-coded command execution | **✅ Complete** |
 | **Phase 6** | **NLP Classifier** | TF-IDF & Logistic Regression intent classifier | **✅ Complete** |
 | **Phase 7** | **Entity Extractor** | Named-entity matching & command parser | **✅ Complete** |
-| **Phase 8** | **PC Automation** | Execution adapters (Browser, Apps, Media, Screenshots, Files, System) | 🔲 Pending |
-| **Phase 9** | **Safety Gating** | Permissions validation, destructiveness warnings, confirmation handlers | 🔲 Pending |
+| **Phase 8** | **PC Automation** | Execution adapters (Browser, Apps, Media, Screenshots, Files, System) | **✅ Complete** |
+| **Phase 9** | **Safety Gating** | Permissions validation, destructiveness warnings, confirmation handlers | **✅ Complete** |
 | **Phase 10** | **User Interface** | GUI dashboard (`CustomTkinter`), history, and status monitor | 🔲 Pending |
 | **Phase 11** | **Memory System** | Conversational context and persistent database (`SQLite`) | 🔲 Pending |
 | **Phase 12** | **Polish & Demo** | Comprehensive test passes, multi-step actions validation | 🔲 Pending |

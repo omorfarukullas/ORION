@@ -5,6 +5,7 @@ System information queries (CPU, RAM, battery) using psutil.
 Controlled commands (shutdown, restart) are gated in Phase 9.
 """
 from __future__ import annotations
+import subprocess
 import psutil
 
 from utils.logger import get_logger
@@ -57,16 +58,26 @@ def get_system_info() -> str:
 def shutdown() -> str:
     """
     Initiate system shutdown.
-
     REQUIRES confirmation via security/confirmation.py before calling.
     """
-    raise NotImplementedError("shutdown is implemented in Phase 8.")
+    logger.warning("Initiating system shutdown sequence...")
+    try:
+        subprocess.run(["shutdown", "/s", "/t", "5"], check=True)
+        return "Initiating system shutdown in 5 seconds."
+    except Exception as e:
+        logger.error(f"Failed to initiate shutdown: {e}")
+        return "Failed to initiate shutdown."
 
 
 def restart() -> str:
     """
     Initiate system restart.
-
     REQUIRES confirmation via security/confirmation.py before calling.
     """
-    raise NotImplementedError("restart is implemented in Phase 8.")
+    logger.warning("Initiating system restart sequence...")
+    try:
+        subprocess.run(["shutdown", "/r", "/t", "5"], check=True)
+        return "Initiating system restart in 5 seconds."
+    except Exception as e:
+        logger.error(f"Failed to initiate restart: {e}")
+        return "Failed to initiate restart."

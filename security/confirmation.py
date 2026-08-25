@@ -1,25 +1,27 @@
 """
 security/confirmation.py
 ========================
-STUB — Phase 9
+Phase 9 — Spoken & Text Confirmation Handler
 
-Spoken/GUI confirmation dialog for destructive actions.
-
-For destructive intents, ORION speaks "You asked me to [action].
-Should I continue?" and listens for an explicit "yes" before proceeding.
+For destructive intents, ORION asks "You asked me to [action]. Should I continue?"
+and listens for an explicit "yes" before proceeding.
 """
 from __future__ import annotations
+from typing import Any
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class ConfirmationHandler:
     """
     Asks the user to confirm a destructive action before execution.
-
-    Phase 9 implementation:
-        1. TTS speaks the confirmation question.
-        2. Listener records the response (short timeout: 5 seconds).
-        3. Whisper transcribes; if "yes" → return True, else → return False.
     """
+
+    def __init__(self, tts: Any = None, listener: Any = None, stt: Any = None) -> None:
+        self.tts = tts
+        self.listener = listener
+        self.stt = stt
 
     def ask(self, action_description: str) -> bool:
         """
@@ -30,9 +32,26 @@ class ConfirmationHandler:
                 e.g. "delete the file old.txt".
 
         Returns:
-            True if the user confirms, False otherwise.
-
-        Raises:
-            NotImplementedError: Until Phase 9 is implemented.
+            True if the user confirms with 'yes', False otherwise.
         """
-        raise NotImplementedError("ConfirmationHandler is implemented in Phase 9.")
+        prompt = f"You asked me to {action_description}. Should I continue?"
+        logger.warning(f"Requesting user confirmation for: '{action_description}'")
+
+        if self.tts:
+            self.tts.speak(prompt)
+
+        if self.listener and self.stt:
+            logger.info("Recording confirmation response (up to 5 seconds)...")
+            audio = self.listener.record()
+            if len(audio) > 0:
+                response = self.stt.transcribe(audio).lower().strip()
+                logger.info(f"User confirmation response: '{response}'")
+                if "yes" in response or "yeah" in response or "confirm" in response or "do it" in response:
+                    logger.info("User CONFIRMED the action.")
+                    return True
+            logger.info("User did NOT confirm the action.")
+            return False
+        else:
+            # Fallback for testing or headless execution: deny by default
+            logger.warning("No audio components provided to ConfirmationHandler. Action cancelled by default.")
+            return False

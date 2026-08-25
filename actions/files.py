@@ -56,29 +56,50 @@ def create_file(name: str, parent: Path | None = None) -> str:
         return f"Failed to create file {name}."
 
 
-def find_file(name: str, search_root: Path | None = None) -> str:
-    """Search for *name* recursively from *search_root* (default: home dir)."""
+def find_file(name: str, search_root: Path | None = None, max_depth: int = 3) -> str:
+    """
+    Search for *name* recursively from *search_root* (default: Desktop/Documents).
+    Limits search depth to *max_depth* to keep search fast and local.
+    """
     if not name:
         return "Please specify a file name to search for."
 
-    root = search_root or Path.home()
-    logger.info(f"Searching for file '{name}' under '{root}'...")
+    roots = [search_root] if search_root else [_get_default_parent(), Path.home() / "Documents", Path.home() / "Downloads"]
+    logger.info(f"Searching for file '{name}' under search roots...")
 
     matches = []
-    try:
-        for path in root.glob(f"**/{name}"):
-            matches.append(path)
-            if len(matches) >= 3:
-                break
-    except Exception as e:
-        logger.error(f"Error searching for file '{name}': {e}")
+    target_lower = name.lower()
+
+    for root in roots:
+        if not root.exists():
+            continue
+        try:
+            for root_dir, dirs, files in os.walk(root):
+                # Calculate current depth relative to root
+                rel_path = Path(root_dir).relative_to(root)
+                if len(rel_path.parts) > max_depth:
+                    dirs.clear()  # Don't recurse deeper
+                    continue
+
+                for file in files:
+                    if file.lower() == target_lower or target_lower in file.lower():
+                        matches.append(Path(root_dir) / file)
+                        if len(matches) >= 3:
+                            break
+                if len(matches) >= 3:
+                    break
+        except Exception as e:
+            logger.error(f"Error searching in '{root}': {e}")
+
+        if matches:
+            break
 
     if matches:
         first_match = matches[0]
         logger.info(f"Found file '{name}' at: {first_match}")
         return f"Found {name} at {first_match}."
     else:
-        logger.info(f"File '{name}' not found under {root}")
+        logger.info(f"File '{name}' not found.")
         return f"Could not find any file named {name}."
 
 
@@ -107,6 +128,7 @@ def rename_file(old_name: str, new_name: str, parent: Path | None = None) -> str
 def delete_file(name: str, parent: Path | None = None) -> str:
     """
     Delete *name* in *parent*.
+    REQUIRES confirmation via security/confirmation.py before calling.
     """
     if not name:
         return "Please specify a file or folder name to delete."
