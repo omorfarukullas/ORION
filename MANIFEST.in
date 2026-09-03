@@ -1,0 +1,9 @@
+include README.md
+include LICENSE
+include requirements.txt
+include CHANGELOG.md
+include ROADMAP.md
+recursive-include config *.json
+recursive-include data *.csv *.json
+recursive-include models *.pkl
+recursive-include web *

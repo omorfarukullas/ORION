@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORION — Web Dashboard & Voice Node</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-info">
+          <h1>ORION</h1>
+          <span class="version-tag">v2.0 PRO</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="overview">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Overview</span>
+        </button>
+        <button class="nav-item" data-tab="personas">
+          <span class="nav-icon">🎙️</span>
+          <span class="nav-text">Voice Personas</span>
+        </button>
+        <button class="nav-item" data-tab="plugins">
+          <span class="nav-icon">🧩</span>
+          <span class="nav-text">Plugin Hub</span>
+        </button>
+        <button class="nav-item" data-tab="history">
+          <span class="nav-icon">📜</span>
+          <span class="nav-text">Command History</span>
+        </button>
+      </nav>
+
+      <!-- Live Connection Status -->
+      <div class="sidebar-footer">
+        <div class="connection-status">
+          <span class="conn-dot online"></span>
+          <span id="conn-text">Connected</span>
+        </div>
+        <div class="node-info">127.0.0.1:8080</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h2 id="section-title">System Overview</h2>
+          <span class="subtitle">Operational Responsive Intelligent Orchestration Network</span>
+        </div>
+
+        <!-- System Telemetry Bar -->
+        <div class="telemetry-bar">
+          <div class="metric-pill">
+            <span class="metric-label">CPU</span>
+            <span class="metric-val" id="metric-cpu">--%</span>
+          </div>
+          <div class="metric-pill">
+            <span class="metric-label">RAM</span>
+            <span class="metric-val" id="metric-ram">--%</span>
+          </div>
+          <div class="metric-pill">
+            <span class="metric-label">BAT</span>
+            <span class="metric-val" id="metric-bat">--%</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Tab 1: Overview -->
+      <section id="tab-overview" class="content-tab active">
+        <!-- Assistant Status Orb & Visualizer -->
+        <div class="hero-card">
+          <div class="orb-container">
+            <div class="status-orb status-idle" id="status-orb">
+              <div class="orb-inner"></div>
+              <div class="orb-wave"></div>
+            </div>
+            <div class="orb-meta">
+              <span class="orb-status-text" id="orb-status-text">IDLE — STANDBY</span>
+              <span class="orb-subtext" id="orb-subtext">Listening for wake word "Hey ORION"</span>
+            </div>
+          </div>
+
+          <!-- Active Persona Badge -->
+          <div class="active-persona-badge">
+            <span class="badge-title">ACTIVE PERSONA</span>
+            <span class="badge-value" id="badge-persona-name">Professional ORION</span>
+          </div>
+        </div>
+
+        <!-- Command Terminal Card -->
+        <div class="card terminal-card">
+          <div class="card-header">
+            <h3>⚡ Quick Command Terminal</h3>
+            <span class="card-caption">Execute PC automations directly via text</span>
+          </div>
+          <form id="command-form" class="command-input-group">
+            <span class="terminal-prompt">&gt;</span>
+            <input 
+              type="text" 
+              id="cmd-input" 
+              placeholder="Type command (e.g. 'open Chrome', 'calculate 25 * 4', 'weather in Tokyo')..." 
+              autocomplete="off"
+            />
+            <button type="submit" id="btn-submit-cmd" class="btn-primary">Execute</button>
+          </form>
+
+          <!-- Last Command Result Box -->
+          <div class="result-box" id="result-box">
+            <div class="result-meta">
+              <span class="res-intent" id="res-intent">Intent: --</span>
+              <span class="res-conf" id="res-conf">Confidence: --</span>
+            </div>
+            <div class="res-outcome" id="res-outcome">Awaiting your command...</div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="card activity-card">
+          <div class="card-header">
+            <h3>📜 Recent Activity</h3>
+            <button id="btn-refresh-history" class="btn-sm">Refresh</button>
+          </div>
+          <div class="history-list" id="mini-history-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: Voice Personas -->
+      <section id="tab-personas" class="content-tab">
+        <div class="section-intro">
+          <h3>Selectable Voice Personas</h3>
+          <p>Customize speech tempo, vocal characteristics, inflection styles, and neural cloning pipelines.</p>
+        </div>
+        <div class="personas-grid" id="personas-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Tab 3: Plugin Hub -->
+      <section id="tab-plugins" class="content-tab">
+        <div class="section-intro">
+          <h3>Cloud Plugin & Skills Hub</h3>
+          <p>Extend ORION with GitHub-hosted community automations, IoT bridges, and custom skills.</p>
+        </div>
+
+        <div class="plugin-columns">
+          <div class="plugin-col">
+            <h4 class="col-title">Installed Plugins</h4>
+            <div id="installed-plugins-list" class="plugins-list"></div>
+          </div>
+          <div class="plugin-col">
+            <h4 class="col-title">Cloud Catalog (GitHub Registry)</h4>
+            <div id="cloud-plugins-list" class="plugins-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 4: Command History -->
+      <section id="tab-history" class="content-tab">
+        <div class="section-intro">
+          <h3>Full Execution History</h3>
+          <p>Audit trail of all voice and text interactions recorded locally in SQLite.</p>
+        </div>
+        <div class="card">
+          <div class="history-table-container">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Spoken Command</th>
+                  <th>Intent</th>
+                  <th>Conf.</th>
+                  <th>Outcome</th>
+                </tr>
+              </thead>
+              <tbody id="full-history-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

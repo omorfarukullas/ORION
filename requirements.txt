@@ -26,6 +26,11 @@ pyperclip>=1.8.2                  # Clipboard operations
 # ─── GUI ───────────────────────────────────────────────────────────────────────
 customtkinter>=5.2.0              # Modern Tkinter GUI
 
+# ─── Web Dashboard & API ───────────────────────────────────────────────────────
+fastapi>=0.100.0                  # Web dashboard backend REST API
+uvicorn>=0.23.0                   # ASGI production web server
+websockets>=12.0                  # Real-time telemetry & event streaming
+
 # ─── Database ──────────────────────────────────────────────────────────────────
 # sqlite3 is part of Python stdlib — no extra package needed
 

@@ -106,7 +106,28 @@ class SettingsPanel(ctk.CTkFrame):
         self.tts_slider.set(Settings.TTS_RATE)
         self.tts_slider.pack(fill="x", padx=12, pady=(0, 10))
 
-        # ── 4. GUI Theme Dropdown ─────────────────────────────────────
+        # ── 4. Voice Persona Dropdown ─────────────────────────────────
+        from speech.personas import persona_manager
+
+        self.persona_frame = ctk.CTkFrame(self, corner_radius=8)
+        self.persona_frame.pack(fill="x", padx=12, pady=6)
+
+        self.persona_lbl = ctk.CTkLabel(
+            self.persona_frame,
+            text="Voice Persona & Style:",
+            font=ctk.CTkFont(size=12, weight="bold"),
+        )
+        self.persona_lbl.pack(side="left", padx=12, pady=10)
+
+        self.persona_option = ctk.CTkOptionMenu(
+            self.persona_frame,
+            values=["Professional ORION", "Friendly Mode", "Coqui TTS / Custom Voice"],
+            command=self._on_persona_select,
+        )
+        self.persona_option.set(persona_manager.active_persona.name)
+        self.persona_option.pack(side="right", padx=12, pady=10)
+
+        # ── 5. GUI Theme Dropdown ─────────────────────────────────────
         self.theme_frame = ctk.CTkFrame(self, corner_radius=8)
         self.theme_frame.pack(fill="x", padx=12, pady=6)
 
@@ -147,6 +168,13 @@ class SettingsPanel(ctk.CTkFrame):
         self.tts_label.configure(text=f"TTS Speech Rate: {Settings.TTS_RATE} WPM")
         Settings.save_user_settings()
         logger.info(f"Updated Settings.TTS_RATE -> {Settings.TTS_RATE}")
+
+    def _on_persona_select(self, choice: str) -> None:
+        from speech.personas import persona_manager
+        persona_manager.set_persona(choice)
+        Settings.VOICE_PERSONA = persona_manager.active_persona.id
+        Settings.save_user_settings()
+        logger.info(f"GUI updated active voice persona -> {choice}")
 
     def _on_theme_select(self, choice: str) -> None:
         Settings.GUI_THEME = choice

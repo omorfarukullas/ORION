@@ -51,7 +51,7 @@ class TextToSpeech:
 
     def speak(self, text: str) -> None:
         """
-        Synthesise and play *text* synchronously.
+        Synthesise and play *text* synchronously, applying the active persona.
 
         Args:
             text: The string to speak aloud.
@@ -59,14 +59,24 @@ class TextToSpeech:
         if not text or not text.strip():
             return
 
-        logger.info(f"Speaking: '{text}'")
+        try:
+            from speech.personas import persona_manager
+            active_persona = persona_manager.active_persona
+            transformed_text = active_persona.transform_text(text)
+            # Adapt rate according to persona if default
+            if active_persona.rate != self.rate:
+                self.set_rate(active_persona.rate)
+        except Exception:
+            transformed_text = text
+
+        logger.info(f"Speaking: '{transformed_text}'")
         if self._engine is None:
             logger.warning("TTS engine not initialized; attempting re-initialization.")
             self._init_engine()
 
         if self._engine:
             try:
-                self._engine.say(text)
+                self._engine.say(transformed_text)
                 self._engine.runAndWait()
             except Exception as e:
                 logger.error(f"Error during TTS playback: {e}")

@@ -81,3 +81,4 @@ secrets.json
 # === ORION Runtime Databases / Scratch ===
 models/chroma_db/
 scratch/
+config/user_settings.json

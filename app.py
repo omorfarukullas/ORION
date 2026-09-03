@@ -213,6 +213,20 @@ def main() -> None:
     context = ConversationContext()
     db = Database(settings.DB_PATH)
 
+    # ── Phase 14: Web Dashboard & REST/WS API ───────────────────────────────────
+    if settings.WEB_ENABLED:
+        try:
+            from api.server import run_api_server
+            web_thread = threading.Thread(
+                target=run_api_server,
+                kwargs={"host": settings.WEB_HOST, "port": settings.WEB_PORT},
+                daemon=True,
+            )
+            web_thread.start()
+            logger.info(f"Web Dashboard API started on http://{settings.WEB_HOST}:{settings.WEB_PORT}")
+        except Exception as e:
+            logger.warning(f"Could not start Web API server: {e}")
+
     # ── Phase 10: GUI Dashboard ─────────────────────────────────────────────────
     dashboard = None
     try:

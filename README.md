@@ -1,15 +1,16 @@
 <div align="center">
 
 # ⚡ ORION — AI Voice PC Assistant
-### **Operational Responsive Intelligent Orchestration Network**
+### **Operational Responsive Intelligent Orchestration Network (v2.0)**
 
-*A local, privacy-first, voice-controlled Windows desktop assistant powered by offline machine learning, local Whisper speech recognition, gated automation, and a modern GUI dashboard.*
+*A local, privacy-first, voice-controlled Windows desktop assistant and web dashboard powered by offline machine learning, local Whisper speech recognition, selectable voice personas, cloud-connected plugins, and gated automation.*
 
 <br/>
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Tests](https://img.shields.io/badge/Tests-110%20Passed-2EA44F?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Tests](https://img.shields.io/badge/Tests-110%2B%20Passing-2EA44F?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Web Dashboard](https://img.shields.io/badge/Web%20UI-FastAPI%20%2B%20WebSockets-009688?style=for-the-badge&logo=fastapi&logoColor=white)](http://127.0.0.1:8080)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-7057ff?style=for-the-badge)](https://github.com/omorfarukullas/ORION)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -72,12 +73,24 @@ ORION continuously listens in a lightweight standby mode, detects the wake word 
   - **Conversational Context**: Resolves follow-up pronouns and references (e.g., *"open Chrome"* ➔ *"close it"*, *"search YouTube for it"*).
   - **SQLite Memory Store**: Remembers user-defined facts (e.g., *"remember that my project folder is on Desktop"*) with exact and fuzzy recall.
 
-- **🎨 Modern CustomTkinter Dashboard & Settings Panel**:
-  - Live state monitor (`IDLE`, `LISTENING`, `PROCESSING`, `SPEAKING`, `ERROR`).
-  - Real-time hardware telemetry bar (CPU %, RAM used/total GB, Battery %).
-  - Real-time Last Command card displaying speech transcript, intent, confidence, and extracted entities.
-  - Scrollable, color-coded execution history with instant Clear functionality.
-  - Live **Settings tab** to adjust confidence thresholds, toggle Ollama LLM, configure TTS rate, switch GUI theme, and save settings to a persistent `config/user_settings.json` file.
+- **🌐 Dual-Interface Architecture (Desktop GUI + Web Dashboard)**:
+  - **CustomTkinter Desktop App**: Native Windows window with instant status orb, interactive plugin hub, live hardware metrics, and settings.
+  - **FastAPI & WebSocket Web UI**: Modern dark glassmorphic web browser dashboard on `http://127.0.0.1:8080` with live audio orb visualizer, remote command injection terminal, and telemetry streaming.
+
+- **🎙️ Selectable Voice Personas**:
+  - **Professional ORION**: Crisp, formal, high-efficiency speech (175 WPM) tailored for rapid workspace automation.
+  - **Friendly Mode**: Cheerful, upbeat, and conversational with supportive conversational phrasing (190 WPM).
+  - **Coqui TTS / Custom Voice Clone**: Extensible offline neural synthesis and custom voice cloning pipeline.
+
+- **🧩 Cloud-Connected Plugin & Skills Ecosystem**:
+  - Discover, download, and hot-reload community automations from a GitHub-hosted index (`omorfarukullas/ORION-plugins`).
+  - Dynamic intent mounting without modifying core source code.
+
+- **📦 Windows .exe Installer & Enterprise Deployment**:
+  - Complete PyInstaller standalone packaging specification (`scripts/orion.spec`).
+  - Inno Setup script (`scripts/orion_installer.iss`) for one-click Windows setup wizards.
+  - Headless containerization support with `Dockerfile` and `docker-compose.yml`.
+  - Comprehensive long-term roadmap across Phases 14–20 in [ROADMAP.md](ROADMAP.md).
 
 ---
 

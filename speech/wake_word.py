@@ -203,7 +203,8 @@ class WakeWordDetector:
 
                     # Maintain rolling window of maximum `chunk_seconds`
                     total_samples = sum(len(b) for b in audio_buffer)
-                    if total_samples < int(self.sample_rate * 0.7):
+                    min_samples = min(int(self.sample_rate * 0.7), max_buffer_samples)
+                    if total_samples < min_samples:
                         continue
 
                     while total_samples > max_buffer_samples and len(audio_buffer) > 1:

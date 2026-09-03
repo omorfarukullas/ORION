@@ -68,10 +68,19 @@ class Settings:
     CONFIDENCE_CONFIRM: float = 0.45   # 45–70 % → ask user to confirm
     # < CONFIDENCE_CONFIRM           → ask user to clarify
 
-    # ── TTS (pyttsx3) ──────────────────────────────────────────────────────────
+    # ── TTS (pyttsx3) & Voice Personas ─────────────────────────────────────────
     TTS_RATE: int = 180                # Words per minute
     TTS_VOLUME: float = 0.9            # 0.0 – 1.0
     TTS_VOICE_INDEX: int = 0          # 0 = Microsoft David (Male), 1 = Microsoft Zira (Female)
+    VOICE_PERSONA: str = "professional"  # "professional" | "friendly" | "coqui_clone"
+
+    # ── Web Dashboard & REST / WebSocket API ───────────────────────────────────
+    WEB_ENABLED: bool = True
+    WEB_HOST: str = "127.0.0.1"
+    WEB_PORT: int = 8080
+
+    # ── Cloud Plugin Registry ──────────────────────────────────────────────────
+    PLUGIN_REGISTRY_URL: str = "https://raw.githubusercontent.com/omorfarukullas/ORION-plugins/main/index.json"
 
     # ── GUI ────────────────────────────────────────────────────────────────────
     GUI_THEME: str = "dark"            # "dark" | "light" | "system"
@@ -118,6 +127,9 @@ class Settings:
             "OLLAMA_ENABLED": cls.OLLAMA_ENABLED,
             "TTS_RATE": cls.TTS_RATE,
             "GUI_THEME": cls.GUI_THEME,
+            "VOICE_PERSONA": cls.VOICE_PERSONA,
+            "WEB_ENABLED": cls.WEB_ENABLED,
+            "WEB_PORT": cls.WEB_PORT,
         }
         try:
             with open(cls.USER_SETTINGS_PATH, "w", encoding="utf-8") as f:

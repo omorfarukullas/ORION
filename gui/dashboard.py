@@ -48,11 +48,24 @@ class Dashboard(ctk.CTk):
         self.status_panel = StatusPanel(self.header_frame, fg_color=("gray85", "gray20"), corner_radius=12)
         self.status_panel.pack(side="right")
 
+        self.web_btn = ctk.CTkButton(
+            self.header_frame,
+            text="🌐 Web UI",
+            width=75,
+            height=28,
+            font=ctk.CTkFont(size=12, weight="bold"),
+            fg_color="#3a86ff",
+            hover_color="#2563eb",
+            command=self._on_open_web_dashboard,
+        )
+        self.web_btn.pack(side="right", padx=(0, 10))
+
         # ── Main Tab View ──────────────────────────────────────────────────
         self.tabview = ctk.CTkTabview(self, corner_radius=10)
         self.tabview.pack(fill="both", expand=True, padx=14, pady=(0, 10))
 
         self.tab_overview = self.tabview.add("📊 Overview")
+        self.tab_plugins = self.tabview.add("🧩 Plugins")
         self.tab_settings = self.tabview.add("⚙ Settings")
 
         # ── Tab 1: Overview ────────────────────────────────────────────────
@@ -134,9 +147,66 @@ class Dashboard(ctk.CTk):
         self.history_panel = HistoryPanel(self.tab_overview, corner_radius=10)
         self.history_panel.pack(fill="both", expand=True, padx=6, pady=(0, 6))
 
-        # ── Tab 2: Settings ────────────────────────────────────────────────
+        # ── Tab 2: Plugins ─────────────────────────────────────────────────
+        self.plugins_header = ctk.CTkFrame(self.tab_plugins, fg_color="transparent")
+        self.plugins_header.pack(fill="x", padx=12, pady=(12, 6))
+
+        self.plugins_title = ctk.CTkLabel(
+            self.plugins_header,
+            text="🧩 Cloud Plugin Hub",
+            font=ctk.CTkFont(size=15, weight="bold"),
+        )
+        self.plugins_title.pack(side="left")
+
+        self.refresh_plugins_btn = ctk.CTkButton(
+            self.plugins_header,
+            text="Refresh",
+            width=65,
+            height=26,
+            command=self._refresh_plugins_list,
+        )
+        self.refresh_plugins_btn.pack(side="right")
+
+        self.plugins_scroll = ctk.CTkScrollableFrame(self.tab_plugins, corner_radius=8)
+        self.plugins_scroll.pack(fill="both", expand=True, padx=10, pady=6)
+        self._refresh_plugins_list()
+
+        # ── Tab 3: Settings ────────────────────────────────────────────────
         self.settings_panel = SettingsPanel(self.tab_settings, corner_radius=10)
         self.settings_panel.pack(fill="both", expand=True, padx=6, pady=6)
+
+    def _on_open_web_dashboard(self) -> None:
+        import webbrowser
+        webbrowser.open(f"http://{Settings.WEB_HOST}:{Settings.WEB_PORT}")
+
+    def _refresh_plugins_list(self) -> None:
+        from plugins.registry import plugin_registry
+        for widget in self.plugins_scroll.winfo_children():
+            widget.destroy()
+
+        installed = plugin_registry.list_installed_plugins()
+        catalog = plugin_registry.fetch_cloud_catalog()
+
+        for item in catalog:
+            card = ctk.CTkFrame(self.plugins_scroll, corner_radius=8)
+            card.pack(fill="x", padx=4, pady=4)
+
+            title_lbl = ctk.CTkLabel(
+                card,
+                text=f"{item.get('name', item.get('id'))} (v{item.get('version', '1.0')})",
+                font=ctk.CTkFont(size=12, weight="bold"),
+            )
+            title_lbl.pack(anchor="w", padx=10, pady=(6, 2))
+
+            desc_lbl = ctk.CTkLabel(
+                card,
+                text=item.get("description", ""),
+                font=ctk.CTkFont(size=11),
+                text_color="gray60",
+                wraplength=420,
+                justify="left",
+            )
+            desc_lbl.pack(anchor="w", padx=10, pady=(0, 6))
 
     def _on_clear_history(self) -> None:
         self.history_panel.clear()
