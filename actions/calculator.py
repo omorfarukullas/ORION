@@ -5,9 +5,11 @@ Safe mathematical expression parser and evaluator.
 Evaluates arithmetic expressions without using raw eval().
 """
 from __future__ import annotations
+
 import ast
 import math
 import re
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -39,16 +41,15 @@ def _safe_eval(node: ast.AST) -> float | int:
             return left % right
         elif isinstance(node.op, ast.Pow):
             return left ** right
-    elif isinstance(node, ast.Call):
-        if isinstance(node.func, ast.Name):
-            func_name = node.func.id.lower()
-            args = [_safe_eval(arg) for arg in node.args]
-            if func_name == "sqrt" and len(args) == 1:
-                return math.sqrt(args[0])
-            elif func_name == "abs" and len(args) == 1:
-                return abs(args[0])
-            elif func_name == "round" and len(args) in (1, 2):
-                return round(*args)
+    elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+        func_name = node.func.id.lower()
+        args = [_safe_eval(arg) for arg in node.args]
+        if func_name == "sqrt" and len(args) == 1:
+            return math.sqrt(args[0])
+        elif func_name == "abs" and len(args) == 1:
+            return abs(args[0])
+        elif func_name == "round" and len(args) in (1, 2):
+            return round(*args)
 
     raise ValueError(f"Unsupported mathematical expression element: {ast.dump(node)}")
 

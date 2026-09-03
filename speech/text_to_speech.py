@@ -8,8 +8,10 @@ Synthesises speech from text using pyttsx3 (offline, cross-platform).
 
 from __future__ import annotations
 
+from typing import Any
+
 import pyttsx3
-from typing import List, Dict, Any, Optional
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -23,7 +25,7 @@ class TextToSpeech:
     espeak on Linux). Fully offline with zero external API dependencies.
     """
 
-    def __init__(self, rate: int = 180, volume: float = 0.9, voice_index: Optional[int] = None) -> None:
+    def __init__(self, rate: int = 180, volume: float = 0.9, voice_index: int | None = None) -> None:
         """
         Args:
             rate:        Words per minute (default: 180).
@@ -33,7 +35,7 @@ class TextToSpeech:
         self.rate = rate
         self.volume = volume
         self.voice_index = voice_index
-        self._engine: Optional[pyttsx3.Engine] = None
+        self._engine: pyttsx3.Engine | None = None
         self._init_engine()
 
     def _init_engine(self) -> None:
@@ -101,7 +103,7 @@ class TextToSpeech:
             except Exception as e:
                 logger.warning(f"Could not set TTS volume: {e}")
 
-    def list_voices(self) -> List[Dict[str, Any]]:
+    def list_voices(self) -> list[dict[str, Any]]:
         """
         Return a list of available system voices.
 

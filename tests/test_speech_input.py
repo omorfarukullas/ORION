@@ -5,6 +5,7 @@ Unit tests for speech input module (Listener and SpeechToText).
 """
 import unittest
 from unittest.mock import MagicMock, patch
+
 import numpy as np
 
 from speech.listener import Listener

@@ -7,6 +7,7 @@ Status bar widget: shows ORION's current state (idle / listening /
 processing / speaking / error) with color-coded indicator and pulsing effect.
 """
 from __future__ import annotations
+
 import customtkinter as ctk
 
 
@@ -56,7 +57,7 @@ class StatusPanel(ctk.CTkFrame):
     def set_state(self, state: str) -> None:
         """
         Update the displayed state.
-        
+
         Args:
             state: One of IDLE, LISTENING, PROCESSING, SPEAKING, ERROR
         """

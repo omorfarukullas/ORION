@@ -5,9 +5,11 @@ File system operations: create, find, rename, and delete files/folders.
 Destructive operations (delete_file) will be gated by security/command_validator.py in Phase 9.
 """
 from __future__ import annotations
+
 import os
 import shutil
 from pathlib import Path
+
 from security.permissions import can_write
 from utils.logger import get_logger
 
@@ -123,7 +125,7 @@ def rename_file(old_name: str, new_name: str, parent: Path | None = None) -> str
 
     if not can_write(old_path) or not can_write(new_path):
         logger.warning(f"Permission denied: Modifying '{old_path}' -> '{new_path}' is not allowed.")
-        return f"Sorry, I am not allowed to modify files in that directory."
+        return "Sorry, I am not allowed to modify files in that directory."
 
     if not old_path.exists():
         logger.warning(f"Cannot rename: '{old_path}' does not exist.")

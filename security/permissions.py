@@ -7,6 +7,7 @@ Per-action permission checking and audit logging. Ensures that only
 allow-listed executables and paths are touched by the actions layer.
 """
 from __future__ import annotations
+
 import json
 from datetime import datetime
 from pathlib import Path
@@ -37,9 +38,7 @@ def can_write(path: Path) -> bool:
             except ValueError:
                 continue
         # Also allow temporary directories for unit testing
-        if "tmp" in str(resolved).lower() or "pytest" in str(resolved).lower():
-            return True
-        return False
+        return bool("tmp" in str(resolved).lower() or "pytest" in str(resolved).lower())
     except Exception as e:
         logger.error(f"Error checking write permission for {path}: {e}")
         return False

@@ -7,7 +7,9 @@ For destructive intents, ORION asks "You asked me to [action]. Should I continue
 and listens for an explicit "yes" before proceeding.
 """
 from __future__ import annotations
+
 from typing import Any
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -47,7 +49,7 @@ class ConfirmationHandler:
                 response = self.stt.transcribe(audio).lower().strip()
                 logger.info(f"User confirmation response: '{response}'")
                 AFFIRMATIVE = (
-                    "yes", "yeah", "yep", "sure", "ok", "okay", "confirm", 
+                    "yes", "yeah", "yep", "sure", "ok", "okay", "confirm",
                     "do it", "continue", "proceed", "go ahead", "yes please", "correct"
                 )
                 if any(aff in response for aff in AFFIRMATIVE):

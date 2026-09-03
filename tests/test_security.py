@@ -6,13 +6,18 @@ Security module unit tests (Phase 9).
 import json
 from pathlib import Path
 from unittest.mock import MagicMock
+
 import numpy as np
 
-import pytest
-from security.command_validator import get_risk_level, is_safe, is_destructive, RiskLevel
-from security.permissions import can_write, audit_log
-from security.confirmation import ConfirmationHandler
 from nlp.command_dispatcher import dispatch
+from security.command_validator import (
+    RiskLevel,
+    get_risk_level,
+    is_destructive,
+    is_safe,
+)
+from security.confirmation import ConfirmationHandler
+from security.permissions import audit_log, can_write
 
 
 class TestCommandValidator:

@@ -9,9 +9,9 @@ and Coqui TTS / Custom Voice Clone).
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional
-import re
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -26,10 +26,10 @@ class Persona:
     rate: int
     volume: float
     voice_index: int
-    prefix_style: Optional[str] = None
-    suffix_style: Optional[str] = None
+    prefix_style: str | None = None
+    suffix_style: str | None = None
     use_neural: bool = False
-    custom_model_path: Optional[str] = None
+    custom_model_path: str | None = None
 
     def transform_text(self, text: str) -> str:
         """Apply persona phrasing adjustments to the spoken response."""
@@ -39,9 +39,9 @@ class Persona:
 
         if self.id == "friendly":
             # Warm and conversational enhancements
-            if cleaned.startswith("Result:") or cleaned.startswith("Calculated:"):
+            if cleaned.startswith(("Result:", "Calculated:")):
                 cleaned = "Sure thing! " + cleaned
-            elif cleaned.startswith("Opening") or cleaned.startswith("Launching"):
+            elif cleaned.startswith(("Opening", "Launching")):
                 cleaned = f"Right away! {cleaned}"
             elif cleaned.startswith("Current weather"):
                 cleaned = f"Here is what it looks like outside: {cleaned}"
@@ -55,7 +55,7 @@ class Persona:
 class PersonaManager:
     """Manages active voice personas and synthesis parameters."""
 
-    DEFAULT_PERSONAS: Dict[str, Persona] = {
+    DEFAULT_PERSONAS: dict[str, Persona] = {
         "professional": Persona(
             id="professional",
             name="Professional ORION",
@@ -86,7 +86,7 @@ class PersonaManager:
     }
 
     def __init__(self, default_persona: str = "professional") -> None:
-        self._personas: Dict[str, Persona] = dict(self.DEFAULT_PERSONAS)
+        self._personas: dict[str, Persona] = dict(self.DEFAULT_PERSONAS)
         self._active_id: str = default_persona if default_persona in self._personas else "professional"
 
     @property
@@ -111,7 +111,7 @@ class PersonaManager:
         logger.warning(f"Persona '{persona_id_or_name}' not found. Keeping '{self.active_persona.name}'")
         return False
 
-    def list_personas(self) -> List[Dict[str, str]]:
+    def list_personas(self) -> list[dict[str, str]]:
         """Return list of available personas for GUI and Web selection."""
         return [
             {

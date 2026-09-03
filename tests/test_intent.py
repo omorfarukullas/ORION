@@ -5,9 +5,10 @@ Unit tests for preprocessing, training, and predicting with IntentClassifier.
 """
 import unittest
 from pathlib import Path
-from nlp.preprocessing import preprocess, tokenise
-from nlp.intent_classifier import IntentClassifier
+
 from nlp.command_dispatcher import dispatch_with_confidence
+from nlp.intent_classifier import IntentClassifier
+from nlp.preprocessing import preprocess, tokenise
 
 
 class TestPreprocessing(unittest.TestCase):

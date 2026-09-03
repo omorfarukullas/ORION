@@ -4,8 +4,10 @@ actions/browser.py
 Web search and URL navigation using standard library webbrowser.
 """
 from __future__ import annotations
+
 import urllib.parse
 import webbrowser
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

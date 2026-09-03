@@ -5,7 +5,9 @@ Fetches current weather information using the free Open-Meteo API.
 Requires no API key.
 """
 from __future__ import annotations
+
 import requests
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

@@ -4,8 +4,10 @@ actions/screenshots.py
 Capture and save screenshots using pyautogui + Pillow.
 """
 from __future__ import annotations
+
 from datetime import datetime
 from pathlib import Path
+
 import pyautogui
 
 from config.settings import Settings

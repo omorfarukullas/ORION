@@ -6,15 +6,27 @@ and returns spoken confirmation strings. Enforces security gating (Phase 9)
 and handles persistent memory (Phase 11).
 """
 from __future__ import annotations
-from datetime import datetime
-from typing import Any, Dict
 
-from actions import applications, browser, files, media, screenshots, system, weather, calculator, clipboard, llm
+from datetime import datetime
+from typing import Any
+
+from actions import (
+    applications,
+    browser,
+    calculator,
+    clipboard,
+    files,
+    llm,
+    media,
+    screenshots,
+    system,
+    weather,
+)
 from config.settings import Settings
-from security.command_validator import get_risk_level, RiskLevel
-from security.permissions import audit_log
-from security.confirmation import ConfirmationHandler
 from database.database import Database
+from security.command_validator import RiskLevel, get_risk_level
+from security.confirmation import ConfirmationHandler
+from security.permissions import audit_log
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -44,7 +56,7 @@ def get_date() -> str:
     return f"Today is {date_str}."
 
 
-def _get_entity_val(entities: Dict[str, Any], key: str, fallback_entity: str | None = None) -> str:
+def _get_entity_val(entities: dict[str, Any], key: str, fallback_entity: str | None = None) -> str:
     val = entities.get(key)
     if val:
         return str(val)
@@ -55,7 +67,7 @@ def _get_entity_val(entities: Dict[str, Any], key: str, fallback_entity: str | N
 
 def dispatch_action(
     intent: str,
-    entities: Dict[str, Any],
+    entities: dict[str, Any],
     fallback_entity: str | None = None,
     db: Database | None = None,
 ) -> str:
@@ -209,7 +221,7 @@ def dispatch(
         confirmed = False
         if confirmation_handler:
             confirmed = confirmation_handler.ask(description)
-        
+
         if not confirmed:
             logger.info(f"Execution of destructive intent '{intent}' was not confirmed.")
             audit_log(intent, str(entities), "CANCELLED_BY_USER")

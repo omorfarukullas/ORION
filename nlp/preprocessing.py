@@ -5,7 +5,9 @@ Text preprocessing pipeline: lowercasing, tokenisation, stop-word
 removal, and stemming. Runs before TF-IDF vectorisation.
 """
 from __future__ import annotations
+
 import re
+
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer

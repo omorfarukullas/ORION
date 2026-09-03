@@ -5,12 +5,14 @@ End-to-end integration tests for ORION assistant (Phase 12).
 """
 from pathlib import Path
 from unittest.mock import MagicMock
+
 import pytest
+
 from database.database import Database
+from nlp.command_dispatcher import dispatch
+from nlp.command_parser import CommandParser
 from planner.context import ConversationContext
 from planner.task_planner import TaskPlanner
-from nlp.command_parser import CommandParser
-from nlp.command_dispatcher import dispatch
 
 
 class TestIntegration:
@@ -50,7 +52,7 @@ class TestIntegration:
         mock_handler.ask.assert_called_once()
 
     def test_context_resolution_followup(self, test_env) -> None:
-        db = test_env["db"]
+        test_env["db"]
         context = test_env["context"]
         parser = test_env["parser"]
 

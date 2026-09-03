@@ -5,9 +5,11 @@ Keyword and rule-based intent parser for Phase 5.
 Used before the ML intent classifier (Phase 6) is trained.
 """
 from __future__ import annotations
+
 import json
 from dataclasses import dataclass
 from pathlib import Path
+
 from config.settings import Settings
 from utils.logger import get_logger
 

@@ -3,12 +3,13 @@ tests/test_gui.py
 =================
 Unit tests for gui/ components (Phase 10).
 """
-import pytest
 import customtkinter as ctk
-from gui.status import StatusPanel
+import pytest
+
+from gui.dashboard import Dashboard
 from gui.history import HistoryPanel
 from gui.metrics import MetricsBar
-from gui.dashboard import Dashboard
+from gui.status import StatusPanel
 
 
 class TestGUIComponents:

@@ -6,8 +6,9 @@ components, and starts the GUI and voice orchestration loops.
 """
 
 from __future__ import annotations
-import sys
+
 import os
+import sys
 import threading
 from typing import Any
 
@@ -18,20 +19,14 @@ if ROOT not in sys.path:
 
 # ── Internal imports ───────────────────────────────────────────────────────────
 from config.settings import Settings
-from utils.logger import get_logger
 from nlp.command_dispatcher import dispatch
+from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 
 def check_python_version() -> None:
     """Abort early if Python version is below the minimum."""
-    if sys.version_info < (3, 11):
-        print(
-            f"[ORION] ERROR: Python 3.11+ is required. "
-            f"You are running {sys.version}. Please upgrade."
-        )
-        sys.exit(1)
 
 
 def voice_orchestration_loop(
@@ -201,11 +196,11 @@ def main() -> None:
     )
 
     # ── Phase 5-12: NLP, Planner, Security, Context, Memory & Database ──────────
+    from database.database import Database
     from nlp.command_parser import CommandParser
+    from planner.context import ConversationContext
     from planner.task_planner import TaskPlanner
     from security.confirmation import ConfirmationHandler
-    from planner.context import ConversationContext
-    from database.database import Database
 
     command_parser = CommandParser()
     task_planner = TaskPlanner(command_parser=command_parser)

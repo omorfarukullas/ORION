@@ -3,8 +3,9 @@
 setup.py for ORION — Operational Responsive Intelligent Orchestration Network
 """
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
 
 this_dir = Path(__file__).parent
 readme_path = this_dir / "README.md"

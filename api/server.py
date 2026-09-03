@@ -8,26 +8,26 @@ Exposes RESTful endpoints and real-time WebSocket state streaming.
 """
 
 from __future__ import annotations
-import asyncio
-import json
-from pathlib import Path
-from typing import Any, Dict, List, Set
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
-import psutil
 
-from config.settings import Settings
-from speech.personas import persona_manager
-from plugins.registry import plugin_registry
+import json
+from typing import Any
+
+import psutil
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
 from api.schemas import (
     CommandRequest,
     CommandResponse,
-    StatusResponse,
     PersonaChangeRequest,
     PluginActionRequest,
+    StatusResponse,
 )
+from config.settings import Settings
+from plugins.registry import plugin_registry
+from speech.personas import persona_manager
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -37,7 +37,7 @@ class ConnectionManager:
     """Manages active WebSocket client connections for real-time telemetry."""
 
     def __init__(self) -> None:
-        self.active_connections: Set[WebSocket] = set()
+        self.active_connections: set[WebSocket] = set()
 
     async def connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
@@ -46,7 +46,7 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket) -> None:
         self.active_connections.discard(websocket)
 
-    async def broadcast(self, message: Dict[str, Any]) -> None:
+    async def broadcast(self, message: dict[str, Any]) -> None:
         dead = []
         payload = json.dumps(message)
         for connection in self.active_connections:
@@ -104,10 +104,10 @@ def create_app() -> FastAPI:
         await ws_manager.broadcast({"type": "status", "status": "PROCESSING", "command": raw_text})
 
         try:
-            from nlp.command_parser import CommandParser
-            from nlp.command_dispatcher import dispatch
-            from planner.context import ConversationContext
             from database.database import Database
+            from nlp.command_dispatcher import dispatch
+            from nlp.command_parser import CommandParser
+            from planner.context import ConversationContext
 
             parser = CommandParser()
             context = ConversationContext()
@@ -181,7 +181,7 @@ def create_app() -> FastAPI:
         success = persona_manager.set_persona(req.persona_id)
         if not success:
             raise HTTPException(status_code=404, detail="Persona not found.")
-        
+
         Settings.VOICE_PERSONA = persona_manager.active_persona.id
         Settings.save_user_settings()
 

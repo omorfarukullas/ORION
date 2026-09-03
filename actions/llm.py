@@ -5,7 +5,9 @@ Local LLM integration using Ollama's REST API (100% offline).
 Routes general questions to local AI models like llama3.2 or mistral.
 """
 from __future__ import annotations
+
 import requests
+
 from config.settings import Settings
 from utils.logger import get_logger
 

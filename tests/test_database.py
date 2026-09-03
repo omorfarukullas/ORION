@@ -4,7 +4,9 @@ tests/test_database.py
 Unit tests for database/database.py (Phase 11).
 """
 from pathlib import Path
+
 import pytest
+
 from database.database import Database
 
 

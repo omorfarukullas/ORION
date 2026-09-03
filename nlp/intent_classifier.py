@@ -5,10 +5,10 @@ TF-IDF + Logistic Regression intent classifier.
 Trained on data/intents.csv, serialised to models/*.pkl.
 """
 from __future__ import annotations
+
 import sys
-import os
 from pathlib import Path
-from typing import Tuple
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -93,7 +93,7 @@ class IntentClassifier:
 
         return {"accuracy": accuracy, "num_samples": len(df)}
 
-    def predict(self, text: str) -> Tuple[str, float]:
+    def predict(self, text: str) -> tuple[str, float]:
         """
         Predict intent and confidence for *text*.
 

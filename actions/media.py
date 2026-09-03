@@ -4,7 +4,9 @@ actions/media.py
 Media playback controls using pyautogui virtual key presses.
 """
 from __future__ import annotations
+
 import pyautogui
+
 from utils.logger import get_logger
 
 logger = get_logger(__name__)

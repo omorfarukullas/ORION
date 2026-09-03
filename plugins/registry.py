@@ -8,11 +8,13 @@ a GitHub-hosted repository index or local directory.
 """
 
 from __future__ import annotations
+
 import json
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-import urllib.request
 import urllib.error
+import urllib.request
+from pathlib import Path
+from typing import Any
+
 from config.settings import Settings
 from utils.logger import get_logger
 
@@ -55,12 +57,12 @@ class PluginRegistry:
         },
     ]
 
-    def __init__(self, plugins_dir: Optional[Path] = None, registry_url: Optional[str] = None) -> None:
+    def __init__(self, plugins_dir: Path | None = None, registry_url: str | None = None) -> None:
         self.plugins_dir: Path = plugins_dir or (Settings.ROOT_DIR / "plugins")
         self.plugins_dir.mkdir(parents=True, exist_ok=True)
         self.registry_url: str = registry_url or Settings.PLUGIN_REGISTRY_URL
 
-    def fetch_cloud_catalog(self, timeout: float = 3.0) -> List[Dict[str, Any]]:
+    def fetch_cloud_catalog(self, timeout: float = 3.0) -> list[dict[str, Any]]:
         """
         Fetch available plugins from the remote GitHub registry index.
         Falls back smoothly to bundled verified index if offline or unreachable.
@@ -81,7 +83,7 @@ class PluginRegistry:
 
         return list(self.OFFICIAL_FALLBACK_INDEX)
 
-    def list_installed_plugins(self) -> List[Dict[str, Any]]:
+    def list_installed_plugins(self) -> list[dict[str, Any]]:
         """List all plugins currently installed in the local plugins directory."""
         installed = []
         for item in self.plugins_dir.iterdir():
@@ -98,7 +100,7 @@ class PluginRegistry:
                         logger.warning(f"Error reading plugin manifest {manifest_path}: {err}")
         return installed
 
-    def install_plugin(self, plugin_id: str, manifest: Optional[Dict[str, Any]] = None) -> bool:
+    def install_plugin(self, plugin_id: str, manifest: dict[str, Any] | None = None) -> bool:
         """Install a plugin into the local plugins directory."""
         target_dir = self.plugins_dir / plugin_id
         target_dir.mkdir(parents=True, exist_ok=True)

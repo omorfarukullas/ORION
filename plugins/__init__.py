@@ -1,6 +1,6 @@
 """
 plugins/__init__.py
 """
-from plugins.registry import plugin_registry, PluginRegistry
+from plugins.registry import PluginRegistry, plugin_registry
 
-__all__ = ["plugin_registry", "PluginRegistry"]
+__all__ = ["PluginRegistry", "plugin_registry"]

@@ -3,8 +3,9 @@ tests/test_actions.py
 =====================
 Action function unit tests using mocks.
 """
-from unittest.mock import MagicMock, patch
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 from actions import applications, browser, files, media, screenshots, system
 
 

@@ -7,7 +7,7 @@ Short-term context memory: tracks recent intents, entities, applications,
 and queries so follow-up commands resolve seamlessly.
 """
 from __future__ import annotations
-from typing import Any, Dict, Optional
+
 from nlp.command_parser import ParsedCommand
 from utils.logger import get_logger
 
@@ -21,12 +21,12 @@ class ConversationContext:
     """
 
     def __init__(self) -> None:
-        self.last_intent: Optional[str] = None
-        self.last_entity: Optional[str] = None
-        self.last_application: Optional[str] = None
-        self.last_search_query: Optional[str] = None
-        self.last_file: Optional[str] = None
-        self.last_folder: Optional[str] = None
+        self.last_intent: str | None = None
+        self.last_entity: str | None = None
+        self.last_application: str | None = None
+        self.last_search_query: str | None = None
+        self.last_file: str | None = None
+        self.last_folder: str | None = None
 
     def update(self, parsed_cmd: ParsedCommand) -> None:
         """
@@ -63,7 +63,7 @@ class ConversationContext:
             - Intent is DELETE_FILE / FIND_FILE but file_name is missing / "it" -> use last_file
         """
         entities = dict(parsed_cmd.entities or {})
-        raw_lower = parsed_cmd.raw_text.lower().strip()
+        parsed_cmd.raw_text.lower().strip()
 
         # Follow-up app resolution: "close it", "close", "quit it", "open it"
         if parsed_cmd.intent in ("OPEN_APP", "CLOSE_APP"):

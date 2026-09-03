@@ -7,7 +7,9 @@ Scrollable command history panel showing recent commands with their
 intent, entity, confidence score, and outcome.
 """
 from __future__ import annotations
+
 from datetime import datetime
+
 import customtkinter as ctk
 
 
@@ -39,7 +41,7 @@ class HistoryPanel(ctk.CTkScrollableFrame):
 
         # Header line: [time] intent (confidence)
         conf_pct = f"{confidence:.0%}" if confidence is not None else "--%"
-        
+
         # Color coding by outcome / confidence
         if "cancel" in outcome.lower() or "abort" in outcome.lower():
             badge_color = "#e63946"

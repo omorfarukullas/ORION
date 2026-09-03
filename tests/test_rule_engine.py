@@ -4,6 +4,7 @@ tests/test_rule_engine.py
 Unit tests for nlp.rule_engine.RuleEngine.
 """
 import unittest
+
 from nlp.rule_engine import RuleEngine
 
 

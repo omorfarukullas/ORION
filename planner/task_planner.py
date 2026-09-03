@@ -7,8 +7,10 @@ Decomposes multi-step commands into an ordered list of single-intent
 tasks and executes them sequentially through the actions layer.
 """
 from __future__ import annotations
+
 import re
-from typing import Any, List
+from typing import Any
+
 from nlp.command_parser import CommandParser, ParsedCommand
 from utils.logger import get_logger
 
@@ -46,13 +48,13 @@ class TaskPlanner:
                 return False
         return True
 
-    def _split_segments(self, text: str) -> List[str]:
+    def _split_segments(self, text: str) -> list[str]:
         """Split text on task conjunctions."""
         parts = self.CONJUNCTION_PATTERN.split(text)
         cleaned = [p.strip() for p in parts if p.strip()]
         return cleaned
 
-    def plan(self, raw_text: str) -> List[ParsedCommand]:
+    def plan(self, raw_text: str) -> list[ParsedCommand]:
         """
         Decompose *raw_text* into a list of single-intent ParsedCommands.
 
@@ -68,7 +70,7 @@ class TaskPlanner:
 
         logger.info(f"TaskPlanner decomposed '{raw_text}' into {len(segments)} step(s): {segments}")
 
-        commands: List[ParsedCommand] = []
+        commands: list[ParsedCommand] = []
         for segment in segments:
             parsed = self.parser.parse(segment)
             commands.append(parsed)
@@ -77,7 +79,7 @@ class TaskPlanner:
 
     def execute_plan(
         self,
-        steps: List[ParsedCommand],
+        steps: list[ParsedCommand],
         dispatch_fn: Any,
         confirmation_handler: Any = None,
         context: Any = None,
@@ -99,11 +101,11 @@ class TaskPlanner:
         if not steps:
             return "No actions to execute."
 
-        replies: List[str] = []
+        replies: list[str] = []
 
         for idx, step in enumerate(steps, start=1):
             logger.info(f"Executing plan step {idx}/{len(steps)}: {step.intent} ({step.raw_text})")
-            
+
             # Resolve context if available
             resolved_step = context.resolve(step) if context else step
 

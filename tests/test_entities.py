@@ -4,8 +4,9 @@ tests/test_entities.py
 Entity extractor and command parser tests (Phase 7 & 11).
 """
 import pytest
-from nlp.entity_extractor import EntityExtractor
+
 from nlp.command_parser import CommandParser, ParsedCommand
+from nlp.entity_extractor import EntityExtractor
 
 
 class TestEntityExtractor:

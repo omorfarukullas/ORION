@@ -7,11 +7,9 @@ Implemented in Phase 1 as fully working utilities (not stubs), since
 these are pure-Python helpers with no external dependencies.
 """
 
+import datetime
 import re
 import time
-import datetime
-from typing import Any
-
 
 # ── Text helpers ──────────────────────────────────────────────────────────────
 

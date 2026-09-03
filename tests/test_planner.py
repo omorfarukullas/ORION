@@ -4,8 +4,10 @@ tests/test_planner.py
 Unit tests for planner/task_planner.py (Phase 12).
 """
 from unittest.mock import MagicMock
+
 import pytest
-from nlp.command_parser import CommandParser, ParsedCommand
+
+from nlp.command_parser import ParsedCommand
 from planner.task_planner import TaskPlanner
 
 

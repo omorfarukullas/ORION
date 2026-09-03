@@ -5,7 +5,9 @@ Pydantic schemas for ORION REST API and WebSocket events.
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
+
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -17,7 +19,7 @@ class CommandResponse(BaseModel):
     raw_text: str
     intent: str
     confidence: float
-    entities: Dict[str, Any] = {}
+    entities: dict[str, Any] = {}
     outcome: str
     success: bool = True
 
@@ -29,8 +31,8 @@ class StatusResponse(BaseModel):
     persona: str = "Professional ORION"
     cpu_percent: float = 0.0
     ram_percent: float = 0.0
-    battery_percent: Optional[int] = None
-    battery_charging: Optional[bool] = None
+    battery_percent: int | None = None
+    battery_charging: bool | None = None
 
 
 class PersonaItem(BaseModel):

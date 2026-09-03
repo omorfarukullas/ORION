@@ -7,6 +7,7 @@ Allow-list gate: classifies an intent into SAFE / DESTRUCTIVE / FORBIDDEN
 before the actions layer executes anything.
 """
 from __future__ import annotations
+
 from enum import Enum, auto
 
 

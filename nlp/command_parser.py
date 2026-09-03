@@ -7,14 +7,14 @@ Combines preprocessing, intent classification, and entity extraction into a sing
 parsed-command object ready for the task planner and command dispatcher.
 """
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Dict, Any
 
-from nlp.preprocessing import preprocess
-from nlp.intent_classifier import IntentClassifier
-from nlp.vector_classifier import VectorIntentClassifier
+from dataclasses import dataclass, field
+from typing import Any
+
 from nlp.entity_extractor import EntityExtractor
+from nlp.intent_classifier import IntentClassifier
 from nlp.rule_engine import RuleEngine
+from nlp.vector_classifier import VectorIntentClassifier
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -26,7 +26,7 @@ class ParsedCommand:
     raw_text: str
     intent: str
     confidence: float
-    entities: Dict[str, Any] = field(default_factory=dict)
+    entities: dict[str, Any] = field(default_factory=dict)
 
     def __str__(self) -> str:
         return (

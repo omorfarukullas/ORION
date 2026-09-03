@@ -5,7 +5,9 @@ System information queries (CPU, RAM, battery) using psutil.
 Controlled commands (shutdown, restart) are gated in Phase 9.
 """
 from __future__ import annotations
+
 import subprocess
+
 import psutil
 
 from utils.logger import get_logger

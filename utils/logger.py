@@ -15,7 +15,6 @@ console (colour-coded via colorlog) and a rotating file in logs/.
 
 import logging
 import logging.handlers
-import os
 from pathlib import Path
 
 

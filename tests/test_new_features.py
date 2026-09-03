@@ -4,10 +4,10 @@ tests/test_new_features.py
 Unit tests for new features: Weather, Calculator, Clipboard, Ollama LLM, and Settings Panel.
 """
 from __future__ import annotations
-from unittest.mock import MagicMock, patch
-import pytest
 
-from actions import weather, calculator, clipboard, llm
+from unittest.mock import MagicMock, patch
+
+from actions import calculator, clipboard, llm, weather
 from config.settings import Settings
 from nlp.command_dispatcher import dispatch_action
 

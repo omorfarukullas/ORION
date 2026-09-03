@@ -7,8 +7,9 @@ Rule-based entity extraction. Pulls app names, URLs, file names, search
 queries, and other slot values out of a command string using regex and keyword rules.
 """
 from __future__ import annotations
+
 import re
-from typing import Dict, Any
+from typing import Any
 
 
 class EntityExtractor:
@@ -16,7 +17,7 @@ class EntityExtractor:
     Extracts named entities from a classified command string.
     """
 
-    def extract(self, text: str, intent: str) -> Dict[str, Any]:
+    def extract(self, text: str, intent: str) -> dict[str, Any]:
         """
         Extract entities relevant to *intent* from *text*.
 
@@ -28,7 +29,7 @@ class EntityExtractor:
             Dict of entity_name → value.
         """
         text = text.strip()
-        entities: Dict[str, Any] = {}
+        entities: dict[str, Any] = {}
 
         if not text or not intent:
             return entities

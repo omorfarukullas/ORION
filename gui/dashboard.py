@@ -7,15 +7,16 @@ CustomTkinter dashboard window. Shows online status, listening
 indicator, last command details, live system stats, and command history.
 """
 from __future__ import annotations
-import threading
-from typing import Any, Dict
+
+from typing import Any
+
 import customtkinter as ctk
 
 from config.settings import Settings
-from gui.status import StatusPanel
-from gui.metrics import MetricsBar
 from gui.history import HistoryPanel
+from gui.metrics import MetricsBar
 from gui.settings_panel import SettingsPanel
+from gui.status import StatusPanel
 
 
 class Dashboard(ctk.CTk):
@@ -184,7 +185,7 @@ class Dashboard(ctk.CTk):
         for widget in self.plugins_scroll.winfo_children():
             widget.destroy()
 
-        installed = plugin_registry.list_installed_plugins()
+        plugin_registry.list_installed_plugins()
         catalog = plugin_registry.fetch_cloud_catalog()
 
         for item in catalog:
@@ -227,7 +228,7 @@ class Dashboard(ctk.CTk):
         raw_text: str,
         intent: str,
         confidence: float,
-        entities: Dict[str, Any] | None = None,
+        entities: dict[str, Any] | None = None,
         outcome: str = "",
     ) -> None:
         """
@@ -240,7 +241,7 @@ class Dashboard(ctk.CTk):
             self.last_text_lbl.configure(text=f"\"{raw_text}\"")
             self.intent_lbl.configure(text=f"Intent: {intent}")
             self.conf_lbl.configure(text=f"Confidence: {confidence:.0%}")
-            
+
             ent_str = ", ".join(f"{k}={v}" for k, v in entities_dict.items()) if entities_dict else "None"
             self.entities_lbl.configure(text=f"Entities: {ent_str}")
 

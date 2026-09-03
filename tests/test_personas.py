@@ -5,7 +5,8 @@ Unit tests for speech personas and voice profile management.
 """
 
 import unittest
-from speech.personas import PersonaManager, Persona, persona_manager
+
+from speech.personas import PersonaManager
 
 
 class TestPersonas(unittest.TestCase):

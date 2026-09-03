@@ -5,9 +5,12 @@ Transcribes recorded audio to text using a locally-run Whisper model.
 No audio is ever sent to a cloud API (Operating Rule 4).
 """
 from __future__ import annotations
+
 import time
+
 import numpy as np
 import whisper
+
 from config.settings import Settings
 from utils.logger import get_logger
 

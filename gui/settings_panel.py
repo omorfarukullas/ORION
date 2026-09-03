@@ -7,7 +7,9 @@ CustomTkinter frame providing live UI controls to adjust ORION's settings
 (confidence thresholds, TTS speech rate, Ollama LLM toggle, theme).
 """
 from __future__ import annotations
+
 import customtkinter as ctk
+
 from config.settings import Settings
 from utils.logger import get_logger
 

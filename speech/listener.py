@@ -6,9 +6,12 @@ until silence is detected via energy-based VAD or ``max_seconds`` elapses,
 then returns the raw audio buffer for transcription.
 """
 from __future__ import annotations
+
 import time
+
 import numpy as np
 import sounddevice as sd
+
 from config.settings import Settings
 from utils.logger import get_logger
 

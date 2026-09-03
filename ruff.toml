@@ -1,0 +1,33 @@
+# ruff.toml — ORION project linting configuration
+# Docs: https://docs.astral.sh/ruff/configuration/
+
+line-length = 120
+target-version = "py311"
+
+[lint]
+# Rules enabled: default E, F, I (errors, pyflakes, isort)
+select = ["E", "F", "I", "W"]
+
+# Ignore non-critical rules that don't affect correctness:
+#   BLE001 — broad exception catching (intentional for robustness)
+#   DTZ005 — datetime.now() without tz (local time is intentional)
+#   RUF012 — mutable class vars (test-only pattern)
+#   C414   — unnecessary list() in sorted() (minor style)
+#   E501   — line too long (handled by line-length above)
+#   W503   — line break before binary operator (deprecated rule)
+ignore = ["BLE001", "DTZ005", "RUF012", "C414", "C901", "E501", "E402"]
+
+[lint.per-file-ignores]
+# Test files: allow unused imports and assert statements
+"tests/*" = ["F401", "F811", "E711", "E712"]
+# Scripts: allow print statements
+"scripts/*" = ["T201"]
+# Settings/config: allow broad ignores
+"config/*" = ["S105", "S106"]
+
+[lint.isort]
+known-first-party = ["actions", "api", "config", "database", "gui", "nlp", "planner", "plugins", "security", "speech", "utils"]
+
+[format]
+quote-style = "double"
+indent-style = "space"

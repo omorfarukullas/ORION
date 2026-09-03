@@ -10,7 +10,6 @@ across the codebase. Import with:
     s = Settings()
 """
 
-import os
 import platform
 from pathlib import Path
 
@@ -100,7 +99,7 @@ class Settings:
             self.MODELS_DIR,
         ):
             directory.mkdir(parents=True, exist_ok=True)
-        
+
         self.load_user_settings()
 
     @classmethod

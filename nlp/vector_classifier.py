@@ -7,11 +7,12 @@ with a lightweight TF-IDF Cosine-Similarity fallback.
 Maps input queries to semantic intent vectors for natural language understanding.
 """
 from __future__ import annotations
+
 import json
-import os
 import sys
 from pathlib import Path
-from typing import Tuple, List, Dict, Any
+from typing import Any
+
 import numpy as np
 
 # Ensure project root is in sys.path
@@ -55,7 +56,6 @@ class VectorIntentClassifier:
         """Load persistent vector database or vector similarity fallback."""
         try:
             import chromadb
-            from sentence_transformers import SentenceTransformer
             self.db_dir.mkdir(parents=True, exist_ok=True)
             self._client = chromadb.PersistentClient(path=str(self.db_dir))
             try:
@@ -73,7 +73,6 @@ class VectorIntentClassifier:
 
     def _init_lightweight_vector_engine(self):
         from sklearn.feature_extraction.text import TfidfVectorizer
-        from sklearn.metrics.pairwise import cosine_similarity
 
         json_file = Settings.DATA_DIR / "training_data.json"
         if not json_file.exists():
@@ -101,14 +100,14 @@ class VectorIntentClassifier:
         self._backend = "scikit"
         logger.info(f"Lightweight Vector Similarity Engine pre-indexed {len(self._examples_list)} intent vectors.")
 
-    def train(self, json_path: Path | str = Settings.DATA_DIR / "training_data.json") -> Dict[str, Any]:
+    def train(self, json_path: Path | str = Settings.DATA_DIR / "training_data.json") -> dict[str, Any]:
         """
         Populate vector database from training data.
         """
         try:
             import chromadb
             from sentence_transformers import SentenceTransformer
-            
+
             if self._embedder is None:
                 logger.info(f"Loading SentenceTransformer model '{self.model_name}'...")
                 self._embedder = SentenceTransformer(self.model_name)
@@ -127,9 +126,9 @@ class VectorIntentClassifier:
             )
 
             json_file = Path(json_path)
-            documents: List[str] = []
-            metadatas: List[Dict[str, str]] = []
-            ids: List[str] = []
+            documents: list[str] = []
+            metadatas: list[dict[str, str]] = []
+            ids: list[str] = []
 
             counter = 0
             if json_file.exists():
@@ -162,7 +161,7 @@ class VectorIntentClassifier:
             self._init_lightweight_vector_engine()
             return {"num_samples": len(self._examples_list)}
 
-    def predict(self, text: str) -> Tuple[str, float]:
+    def predict(self, text: str) -> tuple[str, float]:
         """
         Query vector database or similarity engine for nearest semantic intent match.
 
@@ -189,7 +188,7 @@ class VectorIntentClassifier:
                 distance = results["distances"][0][0] if results.get("distances") else 1.0
                 # ChromaDB cosine distance is in [0, 2]. Convert to similarity in [0, 1].
                 similarity = max(0.0, 1.0 - (distance / 2.0))
-                
+
                 if similarity < 0.68:
                     logger.info(f"ChromaDB Vector match too low: similarity={similarity:.2%} (threshold=68.0%) for input '{text}'")
                     return ("UNKNOWN", 0.0)

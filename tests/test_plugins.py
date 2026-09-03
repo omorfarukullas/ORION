@@ -4,12 +4,13 @@ tests/test_plugins.py
 Unit tests for cloud plugin registry and dynamic plugin loading.
 """
 
-import unittest
-import tempfile
 import shutil
+import tempfile
+import unittest
 from pathlib import Path
-from plugins.registry import PluginRegistry
+
 from plugins.loader import PluginLoader
+from plugins.registry import PluginRegistry
 
 
 class TestPlugins(unittest.TestCase):

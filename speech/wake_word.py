@@ -8,10 +8,12 @@ Continuously monitors microphone audio in standby and wakes when the keyword
 is recognized, using a local Whisper model with sliding-window Voice Activity Detection.
 """
 from __future__ import annotations
+
 import re
 import threading
 import time
-from typing import Callable, Optional, Tuple
+from collections.abc import Callable
+
 import numpy as np
 import sounddevice as sd
 import whisper
@@ -100,7 +102,7 @@ class WakeWordDetector:
         self.chunk_seconds = chunk_seconds
         self.model_size = model_size
 
-        self._on_wake: Optional[Callable[[], None]] = None
+        self._on_wake: Callable[[], None] | None = None
         self._model = None
         self._is_running = False
         self._stop_event = threading.Event()
@@ -127,7 +129,7 @@ class WakeWordDetector:
         remainder = re.sub(pattern, "", cleaned, flags=re.IGNORECASE).strip()
         return remainder
 
-    def _is_wake_word_present(self, text: str) -> Tuple[bool, str]:
+    def _is_wake_word_present(self, text: str) -> tuple[bool, str]:
         """
         Check if the transcribed text matches the wake word or direct commands.
 

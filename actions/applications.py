@@ -5,13 +5,14 @@ Open desktop applications using allow-listed paths from config/applications.json
 and Windows Registry / PATH lookups.
 """
 from __future__ import annotations
+
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
-from pathlib import Path
+
 import psutil
 
 from config.settings import Settings
@@ -155,4 +156,4 @@ def list_running_apps() -> list[str]:
                 apps.add(name)
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
-    return sorted(list(apps))
+    return sorted(apps)

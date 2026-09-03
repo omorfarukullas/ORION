@@ -6,8 +6,9 @@ Phase 10 — System Metrics Bar
 Displays live CPU %, RAM usage, and battery status with auto-refresh.
 """
 from __future__ import annotations
-import psutil
+
 import customtkinter as ctk
+import psutil
 
 
 class MetricsBar(ctk.CTkFrame):

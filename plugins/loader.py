@@ -8,11 +8,14 @@ dynamic intent handlers and keywords into the action dispatcher.
 """
 
 from __future__ import annotations
+
 import importlib.util
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
-from utils.logger import get_logger
+from typing import Any
+
 from plugins.registry import plugin_registry
+from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -20,9 +23,9 @@ logger = get_logger(__name__)
 class PluginLoader:
     """Discovers and mounts plugins into ORION at runtime."""
 
-    def __init__(self, plugins_dir: Optional[Path] = None) -> None:
+    def __init__(self, plugins_dir: Path | None = None) -> None:
         self.plugins_dir: Path = plugins_dir or plugin_registry.plugins_dir
-        self.loaded_handlers: Dict[str, Callable[..., str]] = {}
+        self.loaded_handlers: dict[str, Callable[..., str]] = {}
 
     def discover_and_load(self) -> int:
         """Scan and load all valid enabled plugins."""
@@ -50,7 +53,7 @@ class PluginLoader:
 
         return loaded_count
 
-    def execute_handler(self, intent: str, **kwargs: Any) -> Optional[str]:
+    def execute_handler(self, intent: str, **kwargs: Any) -> str | None:
         """Execute a loaded plugin handler if one matches the intent."""
         if intent in self.loaded_handlers:
             try:

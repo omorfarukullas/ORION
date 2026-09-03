@@ -6,12 +6,13 @@ Phase 11 — SQLite Database Layer
 SQLite persistence layer for ORION's long-term memory and command history.
 """
 from __future__ import annotations
+
 import json
 import sqlite3
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from utils.logger import get_logger
 
@@ -25,7 +26,7 @@ class Database:
 
     def __init__(self, db_path: Path) -> None:
         self.db_path = Path(db_path)
-        self._conn: Optional[sqlite3.Connection] = None
+        self._conn: sqlite3.Connection | None = None
         self._lock = threading.Lock()
         self.connect()
 
@@ -83,7 +84,7 @@ class Database:
         raw_text: str,
         intent: str,
         confidence: float = 1.0,
-        entities: Dict[str, Any] | None = None,
+        entities: dict[str, Any] | None = None,
         outcome: str = "",
     ) -> None:
         """Persist a command and its outcome to command_history."""
@@ -105,7 +106,7 @@ class Database:
         except Exception as e:
             logger.error(f"Failed to log command to database: {e}")
 
-    def get_recent_commands(self, limit: int = 20) -> List[Dict[str, Any]]:
+    def get_recent_commands(self, limit: int = 20) -> list[dict[str, Any]]:
         """Fetch recent command history entries."""
         if not self._conn:
             return []
@@ -130,18 +131,17 @@ class Database:
         try:
             now = datetime.now().isoformat()
             clean_key = key.lower().strip()
-            with self._lock:
-                with self._conn:
-                    self._conn.execute(
-                        """
+            with self._lock, self._conn:
+                self._conn.execute(
+                    """
                         INSERT INTO memories (key, value, created_at, updated_at)
                         VALUES (?, ?, ?, ?)
                         ON CONFLICT(key) DO UPDATE SET
                             value = excluded.value,
                             updated_at = excluded.updated_at
                         """,
-                        (clean_key, value.strip(), now, now),
-                    )
+                    (clean_key, value.strip(), now, now),
+                )
             logger.info(f"Memory saved: '{clean_key}' -> '{value}'")
         except Exception as e:
             logger.error(f"Failed to save memory: {e}")
@@ -150,7 +150,7 @@ class Database:
         """Alias for save_memory."""
         self.save_memory(key, value)
 
-    def recall_memory(self, key: str) -> Optional[str]:
+    def recall_memory(self, key: str) -> str | None:
         """Retrieve a stored memory value by key, or None if not found."""
         if not self._conn or not key:
             return None
@@ -163,7 +163,7 @@ class Database:
                 row = cursor.fetchone()
                 if row:
                     return row["value"]
-                
+
                 # Fuzzy match / contains fallback
                 cursor.execute("SELECT value FROM memories WHERE key LIKE ? OR ? LIKE ('%' || key || '%')", (f"%{clean_key}%", clean_key))
                 fuzzy_row = cursor.fetchone()
@@ -175,11 +175,11 @@ class Database:
             logger.error(f"Failed to recall memory '{key}': {e}")
             return None
 
-    def recall(self, key: str) -> Optional[str]:
+    def recall(self, key: str) -> str | None:
         """Alias for recall_memory."""
         return self.recall_memory(key)
 
-    def list_memories(self) -> Dict[str, str]:
+    def list_memories(self) -> dict[str, str]:
         """List all saved memories as a dictionary."""
         if not self._conn:
             return {}
