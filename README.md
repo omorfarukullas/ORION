@@ -212,7 +212,7 @@ ORION/
 | **Phase 1** | **Scaffold & Setup** | Directory structure, settings singleton, logging, and base stubs | **✅ Complete** |
 | **Phase 2** | **Speech Output** | Local Text-to-Speech voice engine (`pyttsx3`) | **✅ Complete** |
 | **Phase 3** | **Speech Input** | Microphone listener, RMS VAD, and local Whisper transcription | **✅ Complete** |
-| **Phase 4** | **Wake Word** | Standby wake word loop using `openWakeWord` (`"hey_jarvis"`) | **✅ Complete** |
+| **Phase 4** | **Wake Word** | Standby wake word loop using local Whisper (`"orion"`) | **✅ Complete** |
 | **Phase 5** | **Rule-Based Engine** | Keyword pattern matching and immediate fallback execution | **✅ Complete** |
 | **Phase 6** | **NLP Classifier** | TF-IDF & Logistic Regression intent classifier (99.5% accuracy) | **✅ Complete** |
 | **Phase 7** | **Entity Extractor** | Slot-filling entity extractor and unified `CommandParser` | **✅ Complete** |
@@ -339,7 +339,7 @@ python app.py
 ```
 
 - The modern **CustomTkinter Dashboard** will appear.
-- Say the wake word: **`"Hey Jarvis"`** *(or the configured wake phrase)*.
+- Say the wake word: **`"Hey ORION"`** *(or `"ORION"`)*.
 - ORION will chime: *"Yes?"*.
 - Speak your command (e.g. *"Open Chrome and search YouTube for Python tutorials"*).
 
@@ -351,7 +351,7 @@ All settings can be customized in the GUI Settings panel or directly in `config/
 
 | Parameter | Default Value | Description |
 |:---|:---:|:---|
-| `WAKE_WORD` | `"hey_jarvis"` | Model name for openWakeWord detection |
+| `WAKE_WORD` | `"orion"` | Default wake word keyword name |
 | `WAKE_WORD_THRESHOLD` | `0.50` | Activation threshold for wake word detector (0.0–1.0) |
 | `WHISPER_MODEL` | `"base"` | Whisper model size (`tiny`, `base`, `small`, `medium`) |
 | `WHISPER_DEVICE` | `"cpu"` | Inference hardware (`cpu` or `cuda`) |
